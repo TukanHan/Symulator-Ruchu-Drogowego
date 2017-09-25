@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0DE866CA-7E05-4960-A60A-F81189A0FA53}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Symulator_Ruchu_Drogowego</RootNamespace>
+    <AssemblyName>Symulator-Ruchu-Drogowego</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="GeneratorPrzestrzeni.cs" />
+    <Compile Include="GeneratorPolaczenPieszych.cs" />
+    <Compile Include="GeneratorPoziomu.cs" />
+    <Compile Include="KrawedzGrafu.cs" />
+    <Compile Include="WierzcholekGrafu.cs" />
+    <Compile Include="Punkt.cs" />
+    <Compile Include="WierzcholekSamochodow.cs" />
+    <Compile Include="WierzcholekPieszych.cs" />
+    <Compile Include="WyszukiwanieDrogi.cs" />
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GeneratorPolaczenSamochodow.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Drogi\DrogaPionowoLewa.png" />
+    <Resource Include="Obrazki\Drogi\DrogaPionowoPrawa.png" />
+    <Resource Include="Obrazki\Drogi\DrogaPoziomoLewa.png" />
+    <Resource Include="Obrazki\Drogi\DrogaPoziomoPrawa.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Skrzyzowania\SkrzyzowanieLewyDolny.png" />
+    <Resource Include="Obrazki\Skrzyzowania\SkrzyzowanieLewyGorny.png" />
+    <Resource Include="Obrazki\Skrzyzowania\SkrzyzowaniePrawyDolny.png" />
+    <Resource Include="Obrazki\Skrzyzowania\SkrzyzowaniePrawyGorny.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Pasy\LiniaPrzerywanaPionowo.png" />
+    <Resource Include="Obrazki\Pasy\LiniaPrzerywanaPoziomo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Zakret\ZakretZewnetrznyDolLewo.png" />
+    <Resource Include="Obrazki\Zakret\ZakretZewnetrznyDolPrawo.png" />
+    <Resource Include="Obrazki\Zakret\ZakretZewnetrznyGoraLewo.png" />
+    <Resource Include="Obrazki\Zakret\ZakretZewnetrznyGoraPrawo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Zakret\ZakretWewnetrznyDolLewo.png" />
+    <Resource Include="Obrazki\Zakret\ZakretWewnetrznyDolPrawo.png" />
+    <Resource Include="Obrazki\Zakret\ZakretWewnetrznyGoraLewo.png" />
+    <Resource Include="Obrazki\Zakret\ZakretWewnetrznyGoraPrawo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Inne\Trawa.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Inne\Chodnik.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Budynki\Budynek1\LewaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek1\LewyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek1\LewySrodek.png" />
+    <Resource Include="Obrazki\Budynki\Budynek1\PrawaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek1\PrawyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek1\PrawySrodek.png" />
+    <Resource Include="Obrazki\Budynki\Budynek1\SrodkowaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek1\SrodkowyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek1\SrodkowySrodek.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Budynki\Budynek2\LewaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek2\LewyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek2\LewySrodek.png" />
+    <Resource Include="Obrazki\Budynki\Budynek2\PrawaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek2\PrawyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek2\PrawySrodek.png" />
+    <Resource Include="Obrazki\Budynki\Budynek2\SrodkowaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek2\SrodkowyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek2\SrodkowySrodek.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Budynki\Budynek3\LewaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek3\LewyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek3\LewySrodek.png" />
+    <Resource Include="Obrazki\Budynki\Budynek3\PrawaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek3\PrawyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek3\PrawySrodek.png" />
+    <Resource Include="Obrazki\Budynki\Budynek3\SrodkowaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek3\SrodkowyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek3\SrodkowySrodek.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Budynki\Budynek4\LewaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek4\LewyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek4\LewySrodek.png" />
+    <Resource Include="Obrazki\Budynki\Budynek4\PrawaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek4\PrawyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek4\PrawySrodek.png" />
+    <Resource Include="Obrazki\Budynki\Budynek4\SrodkowaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek4\SrodkowyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek4\SrodkowySrodek.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Budynki\Budynek5\LewaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek5\LewyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek5\LewySrodek.png" />
+    <Resource Include="Obrazki\Budynki\Budynek5\PrawaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek5\PrawyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek5\PrawySrodek.png" />
+    <Resource Include="Obrazki\Budynki\Budynek5\SrodkowaGora.png" />
+    <Resource Include="Obrazki\Budynki\Budynek5\SrodkowyDol.png" />
+    <Resource Include="Obrazki\Budynki\Budynek5\SrodkowySrodek.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Pasy\PasyPionowo.png" />
+    <Resource Include="Obrazki\Pasy\PasyPoziomo.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

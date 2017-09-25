@@ -1,0 +1,15 @@
+﻿<Window x:Class="Symulator_Ruchu_Drogowego.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Symulator_Ruchu_Drogowego"
+        mc:Ignorable="d"
+        Title="Symulator ruchu drogowego" Height="675" Width="965">
+    <Canvas Name="warstwa" MouseUp="warstwa_KeyUp">
+        <Canvas.Background>
+            <ImageBrush ImageSource="Obrazki/Inne/Trawa.png" TileMode="Tile" Viewport="0,0,40,40" ViewportUnits="Absolute"/>
+        </Canvas.Background>
+        
+    </Canvas>
+</Window>
