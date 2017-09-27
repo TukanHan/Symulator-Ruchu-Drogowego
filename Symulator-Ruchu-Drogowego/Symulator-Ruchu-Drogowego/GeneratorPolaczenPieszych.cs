@@ -13,7 +13,7 @@ namespace Symulator_Ruchu_Drogowego
         public readonly int GRANICA_PRAWA;
         public readonly int GRANICA_LEWA = 0;
 
-        public List<WierzcholekPieszych> WierzcholkiChodnikow { get; private set; }
+        public List<WierzcholekChodnika> WierzcholkiChodnikow { get; private set; }
         public List<KrawedzGrafu> Chodniki { get; private set; }
 
         public GeneratorPolaczenPieszych(int rozmiarMapyX, int rozmiarMapyY, GeneratorPolaczenSamochodow generatorPolaczen, GeneratorPrzestrzeni generatorBudynkow)
@@ -27,6 +27,7 @@ namespace Symulator_Ruchu_Drogowego
             OdwzorujChodnikiZDrog(generatorPolaczen);
             LaczChodniki();
             RedukujPolaczenia();
+            OznaczPunktyWejscia();
 
             WyszukiwanieDrogi sprawdzeniePoprawnosciPolaczen = new WyszukiwanieDrogi(WierzcholkiChodnikow.ConvertAll(o => (WierzcholekGrafu)o));
             if (!sprawdzeniePoprawnosciPolaczen.CzyGrafSpojny())
@@ -36,69 +37,48 @@ namespace Symulator_Ruchu_Drogowego
         /// <summary>
         /// Odwzorowuje chodniki z połączeń drogowych
         /// </summary>
-        /// <param name="generatorPolaczen">Źródło połączeń drogowych</param>
         private void OdwzorujChodnikiZDrog(GeneratorPolaczenSamochodow generatorPolaczen)
         {
-            foreach(KrawedzGrafu droga in generatorPolaczen.Drogi)
-            {
-                Punkt<double> wierzcholekApoz = droga.WierzcholekA.Pozycja;
-                Punkt<double> wierzcholekBpoz = droga.WierzcholekB.Pozycja;
-
-                if (droga.ZwrocRelacje() == Relacja.Pionowe)
-                {
-                    TworzPolaczeniaKopiowanychTras( new Punkt<double>(wierzcholekApoz.X * 2, wierzcholekApoz.Y * 2 + 1),
-                                                    new Punkt<double>(wierzcholekBpoz.X * 2, wierzcholekBpoz.Y * 2));
-                    TworzPolaczeniaKopiowanychTras( new Punkt<double>(wierzcholekApoz.X * 2 + 1, wierzcholekApoz.Y * 2 + 1),
-                                                    new Punkt<double>(wierzcholekBpoz.X * 2 + 1, wierzcholekBpoz.Y * 2));
-                }
-                else
-                {
-                    TworzPolaczeniaKopiowanychTras( new Punkt<double>(wierzcholekApoz.X * 2 + 1, wierzcholekApoz.Y * 2),
-                                                    new Punkt<double>(wierzcholekBpoz.X * 2, wierzcholekBpoz.Y * 2));
-                    TworzPolaczeniaKopiowanychTras(new Punkt<double>(wierzcholekApoz.X * 2 + 1, wierzcholekApoz.Y * 2 + 1),
-                                                    new Punkt<double>(wierzcholekBpoz.X * 2, wierzcholekBpoz.Y * 2 + 1));
-                }     
-            }
-            foreach(WierzcholekSamochodow wierzcholek in generatorPolaczen.WierzcholkiDrog)
+            foreach(WierzcholekDrogi wierzcholek in generatorPolaczen.WierzcholkiDrog)
             {
                 if(!wierzcholek.CzyJestDrogaWGore() && !(wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.PunktWejscia
                     && !wierzcholek.CzyJestDrogaWGore()))
                 {
-                    TworzPolaczeniaKopiowanychTras( new Punkt<double>(wierzcholek.Pozycja.X * 2, wierzcholek.Pozycja.Y * 2),
-                                                    new Punkt<double>(wierzcholek.Pozycja.X * 2 + 1, wierzcholek.Pozycja.Y * 2));
+                    TworzPolaczeniaKopiowanychTras( new Punkt<double>(wierzcholek.Pozycja.X * 2 -0.5, wierzcholek.Pozycja.Y * 2 - 0.5),
+                                                    new Punkt<double>(wierzcholek.Pozycja.X * 2 + 1.5, wierzcholek.Pozycja.Y * 2 -0.5));
                 }
                 if (!wierzcholek.CzyJestDrogaWDol() && !(wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.PunktWejscia
                     && !wierzcholek.CzyJestDrogaWDol()))
                 {
-                    TworzPolaczeniaKopiowanychTras( new Punkt<double>(wierzcholek.Pozycja.X * 2, wierzcholek.Pozycja.Y * 2 + 1),
-                                                    new Punkt<double>(wierzcholek.Pozycja.X * 2 + 1, wierzcholek.Pozycja.Y * 2 + 1));               
+                    TworzPolaczeniaKopiowanychTras( new Punkt<double>(wierzcholek.Pozycja.X * 2 -0.5, wierzcholek.Pozycja.Y * 2 + 1.5),
+                                                    new Punkt<double>(wierzcholek.Pozycja.X * 2 + 1.5, wierzcholek.Pozycja.Y * 2 + 1.5));               
                 }
                 if (!wierzcholek.CzyJestDrogaWLewo() && !(wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.PunktWejscia
                     && !wierzcholek.CzyJestDrogaWLewo()))
                 {
-                    TworzPolaczeniaKopiowanychTras( new Punkt<double>(wierzcholek.Pozycja.X * 2, wierzcholek.Pozycja.Y * 2),
-                                                    new Punkt<double>(wierzcholek.Pozycja.X * 2, wierzcholek.Pozycja.Y * 2 + 1));
+                    TworzPolaczeniaKopiowanychTras( new Punkt<double>(wierzcholek.Pozycja.X * 2 -0.5, wierzcholek.Pozycja.Y * 2 - 0.5),
+                                                    new Punkt<double>(wierzcholek.Pozycja.X * 2 -0.5, wierzcholek.Pozycja.Y * 2 + 1.5));
                 }
                 if (!wierzcholek.CzyJestDrogaWPrawo() && !(wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.PunktWejscia
                     && !wierzcholek.CzyJestDrogaWPrawo()))
                 {
-                    TworzPolaczeniaKopiowanychTras( new Punkt<double>(wierzcholek.Pozycja.X * 2 + 1, wierzcholek.Pozycja.Y * 2),
-                                                    new Punkt<double>(wierzcholek.Pozycja.X * 2 + 1, wierzcholek.Pozycja.Y * 2 + 1));
+                    TworzPolaczeniaKopiowanychTras( new Punkt<double>(wierzcholek.Pozycja.X * 2 + 1.5, wierzcholek.Pozycja.Y * 2 - 0.5),
+                                                    new Punkt<double>(wierzcholek.Pozycja.X * 2 + 1.5, wierzcholek.Pozycja.Y * 2 + 1.5));
                 }
 
                 if (wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.Pasy)
                 {
-                    WierzcholekPieszych wierzcholekA = null;
-                    WierzcholekPieszych wierzcholekB = null;
+                    WierzcholekChodnika wierzcholekA = null;
+                    WierzcholekChodnika wierzcholekB = null;
                     if (wierzcholek.CzyJestDrogaWDol() && wierzcholek.CzyJestDrogaWGore())
                     {
-                        wierzcholekA = DodajLubZnajdzWierzcholek(new Punkt<double>(wierzcholek.Pozycja.X * 2, wierzcholek.Pozycja.Y * 2 + 0.5));
-                        wierzcholekB = DodajLubZnajdzWierzcholek(new Punkt<double>(wierzcholek.Pozycja.X * 2 + 1, wierzcholek.Pozycja.Y * 2 + 0.5));
+                        wierzcholekA = DodajLubZnajdzWierzcholek(new Punkt<double>(wierzcholek.Pozycja.X * 2 -0.5, wierzcholek.Pozycja.Y * 2 + 0.5));
+                        wierzcholekB = DodajLubZnajdzWierzcholek(new Punkt<double>(wierzcholek.Pozycja.X * 2 + 1.5, wierzcholek.Pozycja.Y * 2 + 0.5));
                     }
                     else if (wierzcholek.CzyJestDrogaWPrawo() && wierzcholek.CzyJestDrogaWLewo())
                     {
-                        wierzcholekA = DodajLubZnajdzWierzcholek(new Punkt<double>(wierzcholek.Pozycja.X * 2 + 0.5, wierzcholek.Pozycja.Y * 2));
-                        wierzcholekB = DodajLubZnajdzWierzcholek(new Punkt<double>(wierzcholek.Pozycja.X * 2 + 0.5, wierzcholek.Pozycja.Y * 2 + 1));
+                        wierzcholekA = DodajLubZnajdzWierzcholek(new Punkt<double>(wierzcholek.Pozycja.X * 2 + 0.5, wierzcholek.Pozycja.Y * 2 -0.5));
+                        wierzcholekB = DodajLubZnajdzWierzcholek(new Punkt<double>(wierzcholek.Pozycja.X * 2 + 0.5, wierzcholek.Pozycja.Y * 2 + 1.5));
                     }
                     wierzcholekA.TypWierzcholka = TypWierzcholkaPieszych.Pasy;
                     wierzcholekB.TypWierzcholka = TypWierzcholkaPieszych.Pasy;
@@ -120,8 +100,8 @@ namespace Symulator_Ruchu_Drogowego
         /// </summary>
         private void LaczChodniki()
         {
-            List<KrawedzGrafu> chodnikiPrzestrzeni = Chodniki.Where<KrawedzGrafu>(o => (o.WierzcholekA as WierzcholekPieszych)
-                .TypWierzcholka == TypWierzcholkaPieszych.ChodnikPrzestrzeni || (o.WierzcholekA as WierzcholekPieszych)
+            List<KrawedzGrafu> chodnikiPrzestrzeni = Chodniki.Where<KrawedzGrafu>(o => (o.WierzcholekA as WierzcholekChodnika)
+                .TypWierzcholka == TypWierzcholkaPieszych.ChodnikPrzestrzeni || (o.WierzcholekA as WierzcholekChodnika)
                 .TypWierzcholka == TypWierzcholkaPieszych.PunktWejscia).ToList();
 
             foreach(KrawedzGrafu chodnikPrzestrzeni in chodnikiPrzestrzeni)
@@ -130,26 +110,26 @@ namespace Symulator_Ruchu_Drogowego
                 {
                     if (chodnikPrzestrzeni.WierzcholekA.Pozycja.Y > GRANICA_GORNA)
                     {
-                        Punkt<double> punkt = new Punkt<double>(chodnikPrzestrzeni.WierzcholekA.Pozycja.X, chodnikPrzestrzeni.WierzcholekA.Pozycja.Y - 1);
-                        ProbujLaczycChodnik(punkt, (WierzcholekPieszych)chodnikPrzestrzeni.WierzcholekA);    
+                        Punkt<double> punkt = new Punkt<double>(chodnikPrzestrzeni.WierzcholekA.Pozycja.X, chodnikPrzestrzeni.WierzcholekA.Pozycja.Y - 0.5);
+                        ProbujLaczycChodnik(punkt, (WierzcholekChodnika)chodnikPrzestrzeni.WierzcholekA);    
                     }
                     if(chodnikPrzestrzeni.WierzcholekB.Pozycja.Y < GRANICA_DOLNA)
                     {
-                        Punkt<double> punkt = new Punkt<double>(chodnikPrzestrzeni.WierzcholekB.Pozycja.X, chodnikPrzestrzeni.WierzcholekB.Pozycja.Y + 1);
-                        ProbujLaczycChodnik(punkt, (WierzcholekPieszych)chodnikPrzestrzeni.WierzcholekB);
+                        Punkt<double> punkt = new Punkt<double>(chodnikPrzestrzeni.WierzcholekB.Pozycja.X, chodnikPrzestrzeni.WierzcholekB.Pozycja.Y + 0.5);
+                        ProbujLaczycChodnik(punkt, (WierzcholekChodnika)chodnikPrzestrzeni.WierzcholekB);
                     }                    
                 }
                 else
                 {
                     if (chodnikPrzestrzeni.WierzcholekA.Pozycja.X > GRANICA_LEWA)
                     {
-                        Punkt<double> punkt = new Punkt<double>(chodnikPrzestrzeni.WierzcholekA.Pozycja.X - 1, chodnikPrzestrzeni.WierzcholekA.Pozycja.Y);
-                        ProbujLaczycChodnik(punkt, (WierzcholekPieszych)chodnikPrzestrzeni.WierzcholekA);
+                        Punkt<double> punkt = new Punkt<double>(chodnikPrzestrzeni.WierzcholekA.Pozycja.X - 0.5, chodnikPrzestrzeni.WierzcholekA.Pozycja.Y);
+                        ProbujLaczycChodnik(punkt, (WierzcholekChodnika)chodnikPrzestrzeni.WierzcholekA);
                     }
                     if (chodnikPrzestrzeni.WierzcholekB.Pozycja.X  < GRANICA_PRAWA)
                     {
-                        Punkt<double> punkt = new Punkt<double>(chodnikPrzestrzeni.WierzcholekB.Pozycja.X + 1, chodnikPrzestrzeni.WierzcholekB.Pozycja.Y);
-                        ProbujLaczycChodnik(punkt, (WierzcholekPieszych)chodnikPrzestrzeni.WierzcholekB);
+                        Punkt<double> punkt = new Punkt<double>(chodnikPrzestrzeni.WierzcholekB.Pozycja.X + 0.5, chodnikPrzestrzeni.WierzcholekB.Pozycja.Y);
+                        ProbujLaczycChodnik(punkt, (WierzcholekChodnika)chodnikPrzestrzeni.WierzcholekB);
                     }
                 }
             }
@@ -160,14 +140,14 @@ namespace Symulator_Ruchu_Drogowego
         /// </summary>
         private void RedukujPolaczenia()
         {
-            foreach(WierzcholekPieszych wierzcholek in WierzcholkiChodnikow)
+            foreach(WierzcholekChodnika wierzcholek in WierzcholkiChodnikow)
             {
                 if(wierzcholek.CzyJestDrogaWLewo() && wierzcholek.CzyJestDrogaWPrawo())
                 {
                     if(!(wierzcholek.CzyJestDrogaWDol() || wierzcholek.CzyJestDrogaWGore()))
                     {
-                        WierzcholekPieszych wierzcholekA = (WierzcholekPieszych)wierzcholek.ZwrocKrawedzLewa().ZwrocPrzeciwnyWierzcholek(wierzcholek);
-                        WierzcholekPieszych wierzcholekB = (WierzcholekPieszych)wierzcholek.ZwrocKrawedzPrawa().ZwrocPrzeciwnyWierzcholek(wierzcholek);
+                        WierzcholekChodnika wierzcholekA = (WierzcholekChodnika)wierzcholek.ZwrocKrawedzLewa().ZwrocPrzeciwnyWierzcholek(wierzcholek);
+                        WierzcholekChodnika wierzcholekB = (WierzcholekChodnika)wierzcholek.ZwrocKrawedzPrawa().ZwrocPrzeciwnyWierzcholek(wierzcholek);
 
                         Chodniki.Remove(wierzcholek.ZwrocKrawedzLewa().UsunKrawedz());
                         Chodniki.Remove(wierzcholek.ZwrocKrawedzPrawa().UsunKrawedz());
@@ -178,8 +158,8 @@ namespace Symulator_Ruchu_Drogowego
                 {
                     if (!(wierzcholek.CzyJestDrogaWLewo() || wierzcholek.CzyJestDrogaWPrawo()))
                     {
-                        WierzcholekPieszych wierzcholekA = (WierzcholekPieszych)wierzcholek.ZwrocKrawedzGorna().ZwrocPrzeciwnyWierzcholek(wierzcholek);
-                        WierzcholekPieszych wierzcholekB = (WierzcholekPieszych)wierzcholek.ZwrocKrawedzDolna().ZwrocPrzeciwnyWierzcholek(wierzcholek);
+                        WierzcholekChodnika wierzcholekA = (WierzcholekChodnika)wierzcholek.ZwrocKrawedzGorna().ZwrocPrzeciwnyWierzcholek(wierzcholek);
+                        WierzcholekChodnika wierzcholekB = (WierzcholekChodnika)wierzcholek.ZwrocKrawedzDolna().ZwrocPrzeciwnyWierzcholek(wierzcholek);
 
                         Chodniki.Remove(wierzcholek.ZwrocKrawedzGorna().UsunKrawedz());
                         Chodniki.Remove(wierzcholek.ZwrocKrawedzDolna().UsunKrawedz());
@@ -195,16 +175,29 @@ namespace Symulator_Ruchu_Drogowego
             }
         }
 
+        /// <summary>
+        /// Punkty poza widoczną przestrzenią będą punktami wejścia
+        /// </summary>
+        private void OznaczPunktyWejscia()
+        {
+            foreach(WierzcholekChodnika wierzcholek in WierzcholkiChodnikow)
+            {
+                if (wierzcholek.Pozycja.X < GRANICA_LEWA || wierzcholek.Pozycja.X > GRANICA_PRAWA ||
+                    wierzcholek.Pozycja.Y > GRANICA_DOLNA || wierzcholek.Pozycja.Y < GRANICA_GORNA)
+                    wierzcholek.TypWierzcholka = TypWierzcholkaPieszych.PunktWejscia;
+            }
+        }
+
         private void TworzPolaczeniaKopiowanychTras(Punkt<double> punktA, Punkt<double> punktB)
         {
-            WierzcholekPieszych wierzcholekA = DodajLubZnajdzWierzcholek(punktA);
-            WierzcholekPieszych wierzcholekB = DodajLubZnajdzWierzcholek(punktB);
+            WierzcholekChodnika wierzcholekA = DodajLubZnajdzWierzcholek(punktA);
+            WierzcholekChodnika wierzcholekB = DodajLubZnajdzWierzcholek(punktB);
             Chodniki.Add(KrawedzGrafu.StworzDroge(wierzcholekA, wierzcholekB));
         }
 
-        private void ProbujLaczycChodnik(Punkt<double> punkt, WierzcholekPieszych wierzcholek)
+        private void ProbujLaczycChodnik(Punkt<double> punkt, WierzcholekChodnika wierzcholek)
         {
-            WierzcholekPieszych szukanyWierzcholek = WierzcholkiChodnikow.Find(o => o.Pozycja.Equals(punkt));
+            WierzcholekChodnika szukanyWierzcholek = WierzcholkiChodnikow.Find(o => o.Pozycja.Equals(punkt));
             if (szukanyWierzcholek != null)
                 Chodniki.Add(KrawedzGrafu.StworzDroge(wierzcholek, szukanyWierzcholek));
             else
@@ -218,11 +211,11 @@ namespace Symulator_Ruchu_Drogowego
             }
         }
 
-        private WierzcholekPieszych DzielTraseWPunkcie(KrawedzGrafu trasa, Punkt<double> punkt)
+        private WierzcholekChodnika DzielTraseWPunkcie(KrawedzGrafu trasa, Punkt<double> punkt)
         {
-            WierzcholekPieszych wierzcholekA = (WierzcholekPieszych)trasa.WierzcholekA;
-            WierzcholekPieszych wierzcholekB = (WierzcholekPieszych)trasa.WierzcholekB;
-            WierzcholekPieszych dzielacyWierzcholek = new WierzcholekPieszych(punkt, TypWierzcholkaPieszych.ChodnikDrogi);
+            WierzcholekChodnika wierzcholekA = (WierzcholekChodnika)trasa.WierzcholekA;
+            WierzcholekChodnika wierzcholekB = (WierzcholekChodnika)trasa.WierzcholekB;
+            WierzcholekChodnika dzielacyWierzcholek = new WierzcholekChodnika(punkt, TypWierzcholkaPieszych.ChodnikDrogi);
             WierzcholkiChodnikow.Add(dzielacyWierzcholek);
 
             Chodniki.Remove(trasa.UsunKrawedz());
@@ -232,10 +225,10 @@ namespace Symulator_Ruchu_Drogowego
             return dzielacyWierzcholek;
         }
 
-        private void LaczTraseWWierzcholku(KrawedzGrafu trasa, WierzcholekPieszych laczacyWierzcholek)
+        private void LaczTraseWWierzcholku(KrawedzGrafu trasa, WierzcholekChodnika laczacyWierzcholek)
         {
-            WierzcholekPieszych wierzcholekA = (WierzcholekPieszych)trasa.WierzcholekA;
-            WierzcholekPieszych wierzcholekB = (WierzcholekPieszych)trasa.WierzcholekB;
+            WierzcholekChodnika wierzcholekA = (WierzcholekChodnika)trasa.WierzcholekA;
+            WierzcholekChodnika wierzcholekB = (WierzcholekChodnika)trasa.WierzcholekB;
 
             Chodniki.Remove(trasa.UsunKrawedz());
             Chodniki.Add(KrawedzGrafu.StworzDroge(wierzcholekA, laczacyWierzcholek));
@@ -256,11 +249,11 @@ namespace Symulator_Ruchu_Drogowego
             return null;
         }
 
-        private WierzcholekPieszych DodajLubZnajdzWierzcholek(Punkt<double> pozycja)
+        private WierzcholekChodnika DodajLubZnajdzWierzcholek(Punkt<double> pozycja)
         {
-            WierzcholekPieszych wierzcholek = WierzcholkiChodnikow.Find(obiekt => obiekt.Pozycja.Equals(pozycja));
+            WierzcholekChodnika wierzcholek = WierzcholkiChodnikow.Find(obiekt => obiekt.Pozycja.Equals(pozycja));
             if (wierzcholek == null)
-                WierzcholkiChodnikow.Add(wierzcholek = new WierzcholekPieszych(pozycja, TypWierzcholkaPieszych.ChodnikDrogi));
+                WierzcholkiChodnikow.Add(wierzcholek = new WierzcholekChodnika(pozycja, TypWierzcholkaPieszych.ChodnikDrogi));
 
             return wierzcholek;
         }

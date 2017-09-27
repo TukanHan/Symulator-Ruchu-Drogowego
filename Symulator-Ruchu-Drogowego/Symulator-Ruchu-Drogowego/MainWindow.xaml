@@ -6,10 +6,10 @@
         xmlns:local="clr-namespace:Symulator_Ruchu_Drogowego"
         mc:Ignorable="d"
         Title="Symulator ruchu drogowego" Height="675" Width="965">
-    <Canvas Name="warstwa" MouseUp="warstwa_KeyUp">
+    <Canvas Name="warstwa">
         <Canvas.Background>
             <ImageBrush ImageSource="Obrazki/Inne/Trawa.png" TileMode="Tile" Viewport="0,0,40,40" ViewportUnits="Absolute"/>
         </Canvas.Background>
-        
+
     </Canvas>
 </Window>

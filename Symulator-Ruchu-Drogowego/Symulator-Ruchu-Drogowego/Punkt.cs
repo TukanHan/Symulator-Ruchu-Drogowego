@@ -8,10 +8,10 @@ namespace Symulator_Ruchu_Drogowego
 {
     public enum Relacja { Poziome, Pionowe, Brak }
 
-    public struct Punkt<T> where T : struct
+    public struct Punkt<T> where T : new()
     {
-        public T X { get; set; }
-        public T Y { get; set; }
+        public T X { get; }
+        public T Y { get; }
 
         public Punkt(T x, T y)
         {
@@ -65,5 +65,7 @@ namespace Symulator_Ruchu_Drogowego
         {
             return new Punkt<double>((double)((dynamic)punktWejsciowy.X), (double)((dynamic)punktWejsciowy.Y));
         }
+
+        public static Punkt<T> PustyPunkt { get { return new Punkt<T>(default(T), default(T)); } }
     }
 }

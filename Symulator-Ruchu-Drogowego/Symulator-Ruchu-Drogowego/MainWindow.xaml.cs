@@ -17,9 +17,12 @@ namespace Symulator_Ruchu_Drogowego
 {
     public partial class MainWindow : Window
     {
+        public static Canvas Warstwa { get; private set; }
+
         public MainWindow()
         {
             InitializeComponent();
+            Warstwa = warstwa;
 
             GenerujSymulacje(12,8,8);
         }
@@ -29,11 +32,12 @@ namespace Symulator_Ruchu_Drogowego
             bool wygenerowanoMape = false;
             while (!wygenerowanoMape)
             {
-                warstwa.Children.Clear();
+                //warstwa.Children.Clear();
 
                 try
                 {
                     GeneratorPoziomu generatorPoziomu = new GeneratorPoziomu(warstwa, szerokosc, wysokosc, liczbaWejsc);
+                    KontrolerRuchu kontorlerRuchu = new KontrolerRuchu(generatorPoziomu.WierzcholkiChodnikow, 30, generatorPoziomu.WierzcholkiDrog, 10);
                     wygenerowanoMape = true;
                 }
                 catch (Exception e)
@@ -43,9 +47,9 @@ namespace Symulator_Ruchu_Drogowego
             }
         }
 
-        private void warstwa_KeyUp(object sender, MouseButtonEventArgs e)
-        {
-            GenerujSymulacje(12,8,8);
-        }
+        //private void warstwa_KeyUp(object sender, MouseButtonEventArgs e)
+        //{
+        //    GenerujSymulacje(12,8,8);
+        //}
     }
 }

@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Symulator_Ruchu_Drogowego
 {
-    public enum TypWierzcholkaSamochodow { PunktWejscia, Skrzyzowanie, Zakret, Pasy };
+    public enum TypWierzcholkaSamochodow { PunktWejscia, Skrzyzowanie, Zakret, Pasy, Droga };
 
-    public class WierzcholekSamochodow : WierzcholekGrafu
+    public class WierzcholekDrogi : WierzcholekGrafu
     {
         public TypWierzcholkaSamochodow TypWierzcholka { get; set; }
 
-        public WierzcholekSamochodow(Punkt<double> pozycja, TypWierzcholkaSamochodow typWierzcholka) : base(pozycja)
+        public WierzcholekDrogi(Punkt<double> pozycja, TypWierzcholkaSamochodow typWierzcholka) : base(pozycja)
         {
             TypWierzcholka = typWierzcholka;
         }

@@ -27,23 +27,24 @@ namespace Symulator_Ruchu_Drogowego
         }
     }
 
+    public enum TypPrzestrzeni { Nic, Chodnik, Droga, Budynek }
+
     public class GeneratorPrzestrzeni
     {    
         public List<Kwadrat> Budynki { get; private set; } = new List<Kwadrat>();
-        public List<WierzcholekPieszych> WierzcholkiChodnikow { get; private set; } = new List<WierzcholekPieszych>();
+        public List<WierzcholekChodnika> WierzcholkiChodnikow { get; private set; } = new List<WierzcholekChodnika>();
         public List<KrawedzGrafu> Chodniki { get; private set; } = new List<KrawedzGrafu>();
+        public TypPrzestrzeni[,] Mapa { get; }
 
-        private Random generatorLosowosci = new Random();
         private int rozmiarMapyX;
         private int rozmiarMapyY;
-        private bool[,] mapa;
 
         public GeneratorPrzestrzeni(int rozmiarMapyX, int rozmiarMapyY, GeneratorPolaczenSamochodow generatorPolaczen)
         {
             this.rozmiarMapyX = rozmiarMapyX*2;
             this.rozmiarMapyY = rozmiarMapyY*2;
 
-            mapa = new bool[this.rozmiarMapyX, this.rozmiarMapyY];
+            Mapa = new TypPrzestrzeni[this.rozmiarMapyX, this.rozmiarMapyY];
 
             OdwzorujDroge(generatorPolaczen);
             GenerujChodniki();
@@ -55,30 +56,17 @@ namespace Symulator_Ruchu_Drogowego
         /// </summary>
         private void OdwzorujDroge(GeneratorPolaczenSamochodow generatorPolaczen)
         {
-            foreach(KrawedzGrafu droga in generatorPolaczen.Drogi)
+            foreach(WierzcholekDrogi wierzcholek in generatorPolaczen.WierzcholkiDrog)
             {
-                Punkt<int> punkt = (Punkt<int>)droga.WierzcholekA.Pozycja;
+                Punkt<int> punkt = (Punkt<int>)wierzcholek.Pozycja;
 
-                for (int i = 0; i <= droga.DlugoscKrawedzi(); ++i)
+                if (wierzcholek.TypWierzcholka != TypWierzcholkaSamochodow.PunktWejscia)
                 {
-                    if ((punkt.Y + i) * 2 < 0 || (punkt.X + i) * 2 < 0 || (punkt.Y + i) * 2  >= rozmiarMapyY -1 || (punkt.X + i) * 2>= rozmiarMapyX -1)
-                        continue;
-
-                    if (droga.ZwrocRelacje() == Relacja.Pionowe)
-                    {
-                        mapa[punkt.X * 2, (punkt.Y + i) * 2] = true;
-                        mapa[punkt.X * 2 + 1, (punkt.Y + i) * 2] = true;
-                        mapa[punkt.X * 2, (punkt.Y + i) * 2 + 1] = true;
-                        mapa[punkt.X * 2 + 1, (punkt.Y + i) * 2 + 1] = true;
-                    }
-                    else
-                    {
-                        mapa[(punkt.X + i) * 2, punkt.Y * 2] = true;
-                        mapa[(punkt.X + i) * 2 + 1, punkt.Y * 2] = true;
-                        mapa[(punkt.X + i) * 2, punkt.Y * 2 + 1] = true;
-                        mapa[(punkt.X + i) * 2 + 1, punkt.Y * 2 + 1] = true;
-                    }
-                }
+                    Mapa[punkt.X * 2, punkt.Y * 2] = TypPrzestrzeni.Droga;
+                    Mapa[punkt.X * 2 + 1, punkt.Y * 2] = TypPrzestrzeni.Droga;
+                    Mapa[punkt.X * 2, punkt.Y * 2 + 1] = TypPrzestrzeni.Droga;
+                    Mapa[punkt.X * 2 + 1, punkt.Y * 2 + 1] = TypPrzestrzeni.Droga;
+                }            
             }
         }
 
@@ -110,7 +98,7 @@ namespace Symulator_Ruchu_Drogowego
                             czyMogePoziomo = false;
                         else
                         {
-                            if (generatorLosowosci.Next(0, 2) == 0)
+                            if (GeneratorPoziomu.GeneratorLosowosci.Next(0, 2) == 0)
                                 czyMogePionowo = false;
                             else
                                 czyMogePoziomo = false;
@@ -152,8 +140,8 @@ namespace Symulator_Ruchu_Drogowego
 
                     if(kwadrat.Wysokosc>=2 && kwadrat.Szerokosc>=2)
                     {
-                        bool czyDziele = generatorLosowosci.Next(0, 2) == 1 ? true : false;
-                        if (kwadrat.Wysokosc > 8 || kwadrat.Szerokosc > 8 || kwadrat.Wysokosc * kwadrat.Szerokosc > 16)
+                        bool czyDziele = GeneratorPoziomu.GeneratorLosowosci.Next(0, 2) == 1 ? true : false;
+                        if (kwadrat.Wysokosc > 6 || kwadrat.Szerokosc > 6 || kwadrat.Wysokosc * kwadrat.Szerokosc > 16)
                             czyDziele = true;
                         else if (kwadrat.Wysokosc * kwadrat.Szerokosc <= 8 || (kwadrat.Szerokosc<=4 && kwadrat.Wysokosc<=4))
                             czyDziele = false;
@@ -169,7 +157,7 @@ namespace Symulator_Ruchu_Drogowego
                                 dzielePoziomo = false;
                             else
                             {
-                                if (generatorLosowosci.Next(0, 2) == 0)
+                                if (GeneratorPoziomu.GeneratorLosowosci.Next(0, 2) == 0)
                                     dzielePionowo = false;
                                 else
                                     dzielePoziomo = false;
@@ -193,9 +181,7 @@ namespace Symulator_Ruchu_Drogowego
                             Budynki.Add(kwadrat);
                             kwadraty.Remove(kwadrat);
 
-                            for (int j = kwadrat.Pozycja.Y; j < kwadrat.Pozycja.Y + kwadrat.Wysokosc; ++j)
-                                for (int i = kwadrat.Pozycja.X; i < kwadrat.Pozycja.X + kwadrat.Szerokosc; ++i)
-                                    mapa[i, j] = true;
+                            ZaznaczNaMapie<TypPrzestrzeni>(Mapa, kwadrat, TypPrzestrzeni.Budynek);
                         }
                     }
                     else                    
@@ -206,27 +192,27 @@ namespace Symulator_Ruchu_Drogowego
 
         private void BudujChodnik(Punkt<double> punktA, Punkt<double> punktB)
         {
-            WierzcholekPieszych wierzcholekA;
+            WierzcholekChodnika wierzcholekA;
             if (punktA.X == 0)
-                wierzcholekA = new WierzcholekPieszych(new Punkt<double>(punktA.X - 1, punktA.Y), TypWierzcholkaPieszych.PunktWejscia);
+                wierzcholekA = new WierzcholekChodnika(new Punkt<double>(punktA.X - 0.5, punktA.Y), TypWierzcholkaPieszych.PunktWejscia);
             else if(punktA.Y == 0)
-                wierzcholekA = new WierzcholekPieszych(new Punkt<double>(punktA.X, punktA.Y - 1), TypWierzcholkaPieszych.PunktWejscia);
+                wierzcholekA = new WierzcholekChodnika(new Punkt<double>(punktA.X, punktA.Y - 0.5), TypWierzcholkaPieszych.PunktWejscia);
             else
-                wierzcholekA = new WierzcholekPieszych(punktA, TypWierzcholkaPieszych.ChodnikPrzestrzeni);
+                wierzcholekA = new WierzcholekChodnika(punktA, TypWierzcholkaPieszych.ChodnikPrzestrzeni);
 
-            WierzcholekPieszych wierzcholekB;
+            WierzcholekChodnika wierzcholekB;
             if (punktB.X == rozmiarMapyX -1)
-                wierzcholekB = new WierzcholekPieszych(new Punkt<double>(punktB.X + 1, punktB.Y), TypWierzcholkaPieszych.PunktWejscia);
+                wierzcholekB = new WierzcholekChodnika(new Punkt<double>(punktB.X + 0.5, punktB.Y), TypWierzcholkaPieszych.PunktWejscia);
             else if (punktB.Y == rozmiarMapyY - 1)
-                wierzcholekB = new WierzcholekPieszych(new Punkt<double>(punktB.X, punktB.Y + 1), TypWierzcholkaPieszych.PunktWejscia);
+                wierzcholekB = new WierzcholekChodnika(new Punkt<double>(punktB.X, punktB.Y + 0.5), TypWierzcholkaPieszych.PunktWejscia);
             else
-                wierzcholekB = new WierzcholekPieszych(punktB, TypWierzcholkaPieszych.ChodnikPrzestrzeni);
+                wierzcholekB = new WierzcholekChodnika(punktB, TypWierzcholkaPieszych.ChodnikPrzestrzeni);
 
             WierzcholkiChodnikow.Add(wierzcholekA);
             WierzcholkiChodnikow.Add(wierzcholekB);
             Chodniki.Add(KrawedzGrafu.StworzDroge(wierzcholekA, wierzcholekB));
 
-            ZaznaczNaMapie(mapa, new Kwadrat((Punkt<int>)punktA, (Punkt<int>)punktB));
+            ZaznaczNaMapie<TypPrzestrzeni>(Mapa, new Kwadrat((Punkt<int>)punktA, (Punkt<int>)punktB), TypPrzestrzeni.Chodnik);
         }
 
         private List<Kwadrat> ZbierzWolneKwadraty()
@@ -234,7 +220,9 @@ namespace Symulator_Ruchu_Drogowego
             List<Kwadrat> kwadraty = new List<Kwadrat>();
 
             bool[,] kopiaMapy = new bool[rozmiarMapyX, rozmiarMapyY];
-            Array.Copy(mapa, kopiaMapy, mapa.Length);
+            for (int j = 0; j < rozmiarMapyX; ++j)
+                for (int i = 0; i < rozmiarMapyY; ++i)
+                    kopiaMapy[j, i] = (Mapa[j, i] == TypPrzestrzeni.Nic ? false : true);
 
             for (int j = 0; j < rozmiarMapyY; ++j)            
                 for (int i = 0; i < rozmiarMapyX; ++i)                
@@ -264,16 +252,16 @@ namespace Symulator_Ruchu_Drogowego
 
 
             Kwadrat kwadrat = new Kwadrat(pozycja, wysokosc - pozycja.Y, szerokosc - pozycja.X);
-            ZaznaczNaMapie(kopiaMapy, kwadrat);
+            ZaznaczNaMapie<bool>(kopiaMapy, kwadrat,true);
 
             return kwadrat;
         }
 
-        private void ZaznaczNaMapie(bool[,] mapa, Kwadrat kwadrat)
+        private void ZaznaczNaMapie<T>(T[,] mapa, Kwadrat kwadrat, T wartosc)
         {
             for (int j = kwadrat.Pozycja.Y; j < kwadrat.Pozycja.Y + kwadrat.Wysokosc && j < rozmiarMapyY; ++j)
                 for (int i = kwadrat.Pozycja.X; i < kwadrat.Pozycja.X + kwadrat.Szerokosc && i < rozmiarMapyX; ++i)
-                    mapa[i, j] = true;
+                    mapa[i, j] = wartosc;
         }
     }
 }

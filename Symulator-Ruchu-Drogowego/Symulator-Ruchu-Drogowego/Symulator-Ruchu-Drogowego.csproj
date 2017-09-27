@@ -55,14 +55,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="GeneratorPasow.cs" />
     <Compile Include="GeneratorPrzestrzeni.cs" />
     <Compile Include="GeneratorPolaczenPieszych.cs" />
     <Compile Include="GeneratorPoziomu.cs" />
+    <Compile Include="Geometria.cs" />
+    <Compile Include="KontrolerPieszych.cs" />
+    <Compile Include="KontrolerRuchu.cs" />
+    <Compile Include="KontrolerSamochodow.cs" />
     <Compile Include="KrawedzGrafu.cs" />
+    <Compile Include="Pieszy.cs" />
+    <Compile Include="Samochod.cs" />
     <Compile Include="WierzcholekGrafu.cs" />
     <Compile Include="Punkt.cs" />
-    <Compile Include="WierzcholekSamochodow.cs" />
-    <Compile Include="WierzcholekPieszych.cs" />
+    <Compile Include="WierzcholekDrogi.cs" />
+    <Compile Include="WierzcholekChodnika.cs" />
     <Compile Include="WyszukiwanieDrogi.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -118,7 +125,6 @@
     <Resource Include="Obrazki\Skrzyzowania\SkrzyzowaniePrawyGorny.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Obrazki\Pasy\LiniaPrzerywanaPionowo.png" />
     <Resource Include="Obrazki\Pasy\LiniaPrzerywanaPoziomo.png" />
   </ItemGroup>
   <ItemGroup>
@@ -195,8 +201,51 @@
     <Resource Include="Obrazki\Budynki\Budynek5\SrodkowySrodek.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Obrazki\Pasy\LiniaPrzerywanaPionowo.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Obrazki\Pasy\PasyPionowo.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Obrazki\Pasy\PasyPoziomo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Pasy\PasyZakretDolPrawo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Pasy\PasyZakretDolLewo.png" />
+    <Resource Include="Obrazki\Pasy\PasyZakretGoraLewo.png" />
+    <Resource Include="Obrazki\Pasy\PasyZakretGoraPrawo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Ozdoby\Drzewo1.png" />
+    <Resource Include="Obrazki\Ozdoby\Drzewo2.png" />
+    <Resource Include="Obrazki\Ozdoby\Drzewo3.png" />
+    <Resource Include="Obrazki\Ozdoby\Hydrant.png" />
+    <Resource Include="Obrazki\Ozdoby\Lampa.png" />
+    <Resource Include="Obrazki\Ozdoby\Lawka.png" />
+    <Resource Include="Obrazki\Ozdoby\Poczta.png" />
+    <Resource Include="Obrazki\Ozdoby\Smietnik.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Osoby\Osoba1.png" />
+    <Resource Include="Obrazki\Osoby\Osoba2.png" />
+    <Resource Include="Obrazki\Osoby\Osoba3.png" />
+    <Resource Include="Obrazki\Osoby\Osoba4.png" />
+    <Resource Include="Obrazki\Osoby\Osoba5.png" />
+    <Resource Include="Obrazki\Osoby\Osoba6.png" />
+    <Resource Include="Obrazki\Osoby\Osoba7.png" />
+    <Resource Include="Obrazki\Osoby\Osoba8.png" />
+    <Resource Include="Obrazki\Osoby\Osoba9.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Samochody\samochod3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Samochody\samochod2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Samochody\samochod1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

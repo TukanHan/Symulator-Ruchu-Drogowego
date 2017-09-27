@@ -11,10 +11,13 @@ namespace Symulator_Ruchu_Drogowego
 {
     public class GeneratorPoziomu
     {
+        public static Random GeneratorLosowosci { get; } = new Random();
+
+        public List<WierzcholekDrogi> WierzcholkiDrog { get { return generatorPolaczen.WierzcholkiDrog; } }
+        public List<WierzcholekChodnika> WierzcholkiChodnikow { get { return generatorPolaczenPieszych.WierzcholkiChodnikow; } }
+
         private Canvas rodzicObrazkow;
-        private Random generatorLosowosci = new Random();
         private GeneratorPolaczenSamochodow generatorPolaczen;
-        private GeneratorPrzestrzeni generatorBudynkow;
         private GeneratorPolaczenPieszych generatorPolaczenPieszych;
 
         public GeneratorPoziomu(Canvas rodzicObrazkow, int szerokosc, int wysokosc, int liczbaWejsc)
@@ -22,20 +25,22 @@ namespace Symulator_Ruchu_Drogowego
             this.rodzicObrazkow = rodzicObrazkow;
 
             generatorPolaczen = new GeneratorPolaczenSamochodow(szerokosc, wysokosc, liczbaWejsc);
-            generatorBudynkow = new GeneratorPrzestrzeni(szerokosc, wysokosc, generatorPolaczen);
+            GeneratorPasow generatorPasow = new GeneratorPasow(generatorPolaczen);
+            GeneratorPrzestrzeni generatorBudynkow = new GeneratorPrzestrzeni(szerokosc, wysokosc, generatorPolaczen);
             generatorPolaczenPieszych = new GeneratorPolaczenPieszych(szerokosc, wysokosc, generatorPolaczen, generatorBudynkow);
 
             RysujDrogi();
-            RysujBudynki();
-            RysujChodniki();
-            RysujPasy();
+            RysujBudynki(generatorBudynkow);
+            RysujMape(generatorBudynkow);
+            RysujKonturChodnika();
+            RysujPasy(generatorPasow);
         }
 
         private void RysujDrogi()
         {
-            foreach(WierzcholekSamochodow wierzcholek in generatorPolaczen.WierzcholkiDrog)
+            foreach(WierzcholekDrogi wierzcholek in generatorPolaczen.WierzcholkiDrog)
             {
-                if(wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.Pasy)
+                if(wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.Pasy || wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.Droga)
                 {
                     if(wierzcholek.CzyJestDrogaWDol() || wierzcholek.CzyJestDrogaWGore())
                         Tworz4Obrazki(wierzcholek.Pozycja, @"Drogi\DrogaPionowoLewa.png", @"Drogi\DrogaPionowoPrawa.png", @"Drogi\DrogaPionowoLewa.png", @"Drogi\DrogaPionowoPrawa.png");
@@ -76,28 +81,13 @@ namespace Symulator_Ruchu_Drogowego
                         Tworz4Obrazki(wierzcholek.Pozycja, @"Zakret\ZakretZewnetrznyGoraLewo.png", @"Drogi\DrogaPoziomoLewa.png", @"Drogi\DrogaPionowoLewa.png", @"Zakret\ZakretWewnetrznyDolPrawo.png");
                 }              
             }
-
-            foreach (KrawedzGrafu droga in generatorPolaczen.Drogi)
-            {
-                Punkt<double> punkt = Punkt<double>.ZwrocPozycjeMniejszego(droga.WierzcholekA.Pozycja, droga.WierzcholekB.Pozycja);
-
-                for (int i = 1; i < droga.DlugoscKrawedzi(); ++i)
-                {
-                    if (droga.ZwrocRelacje() == Relacja.Pionowe)
-                        Tworz4Obrazki(new Punkt<double>(punkt.X, punkt.Y + i), @"Drogi\DrogaPionowoLewa.png", @"Drogi\DrogaPionowoPrawa.png", @"Drogi\DrogaPionowoLewa.png", @"Drogi\DrogaPionowoPrawa.png");
-                    else
-                        Tworz4Obrazki(new Punkt<double>(punkt.X + i, punkt.Y), @"Drogi\DrogaPoziomoLewa.png", @"Drogi\DrogaPoziomoLewa.png", @"Drogi\DrogaPoziomoPrawa.png", @"Drogi\DrogaPoziomoPrawa.png");
-                }
-            }
-
-
         }
 
-        private void RysujBudynki()
+        private void RysujBudynki(GeneratorPrzestrzeni generatorBudynkow)
         {
             foreach (Kwadrat budynek in generatorBudynkow.Budynki)
             {
-                string folder = $"Budynek{generatorLosowosci.Next(1, 6)}";
+                string folder = $"Budynek{GeneratorLosowosci.Next(1, 6)}";
 
                 for (int i = 0; i < budynek.Szerokosc; ++i)
                 {
@@ -123,23 +113,49 @@ namespace Symulator_Ruchu_Drogowego
             }
         }
 
-        private void RysujChodniki()
+        private void RysujMape(GeneratorPrzestrzeni generatorBudynkow)
         {
-            foreach (KrawedzGrafu chodnik in generatorPolaczenPieszych.Chodniki)
+            for(int i=0; i< generatorBudynkow.Mapa.GetLength(0); ++i)
             {
-                Punkt<double> punkt = chodnik.WierzcholekA.Pozycja;
-
-                for (int i = 0; i <= chodnik.DlugoscKrawedzi(); ++i)
+                for (int j = 0; j < generatorBudynkow.Mapa.GetLength(1); ++j)
                 {
-                    Image obrazek = TworzObrazek(@"Inne/Chodnik.png", 0);
-
-                    if (chodnik.ZwrocRelacje() == Relacja.Pionowe)
-                        UstawPozycjeObiektu(obrazek, new Punkt<double>(punkt.X * 40, (punkt.Y + i) * 40));
-                    else
-                        UstawPozycjeObiektu(obrazek, new Punkt<double>((punkt.X + i) * 40, punkt.Y * 40));
+                    if (generatorBudynkow.Mapa[i, j] == TypPrzestrzeni.Chodnik || generatorBudynkow.Mapa[i, j] == TypPrzestrzeni.Droga)
+                        RysujChodnik(new Punkt<double>(i, j));
+                    else if (generatorBudynkow.Mapa[i, j] == TypPrzestrzeni.Nic)
+                        RysujOzdobe(new Punkt<double>(i, j));
                 }
             }
+        }
 
+        private void RysujOzdobe(Punkt<double> punkt)
+        {
+            int rand = GeneratorLosowosci.Next(0, 14);
+            if (rand == 0)
+                TworzIUstawObrazekOzdoby(@"Ozdoby/Lampa.png", punkt);
+            else if (rand == 1)
+                TworzIUstawObrazekOzdoby(@"Ozdoby/Lawka.png", punkt);
+            else if (rand == 2)
+                TworzIUstawObrazekOzdoby(@"Ozdoby/Poczta.png", punkt);
+            else if (rand == 3)
+                TworzIUstawObrazekOzdoby(@"Ozdoby/Smietnik.png", punkt);
+            else if (rand == 4)
+                TworzIUstawObrazekOzdoby(@"Ozdoby/Hydrant.png", punkt);
+            else if (rand >= 5 && rand <= 7)
+                TworzIUstawObrazekOzdoby(@"Ozdoby/Drzewo1.png", punkt);
+            else if (rand >= 8 && rand <= 10)
+                TworzIUstawObrazekOzdoby(@"Ozdoby/Drzewo2.png", punkt);
+            else if (rand >= 11 && rand <= 13)
+                TworzIUstawObrazekOzdoby(@"Ozdoby/Drzewo3.png", punkt);
+        }
+
+        private void RysujChodnik(Punkt<double> punkt)
+        {
+            Image obrazek = TworzObrazek(@"Inne/Chodnik.png", 0);
+            UstawPozycjeObiektu(obrazek, new Punkt<double>(punkt.X * 40, punkt.Y * 40));
+        }
+
+        private void RysujKonturChodnika()
+        {
             foreach (KrawedzGrafu krawedz in generatorPolaczenPieszych.Chodniki)
             {
                 System.Windows.Shapes.Polyline yellowPolyline = new System.Windows.Shapes.Polyline()
@@ -148,7 +164,7 @@ namespace Symulator_Ruchu_Drogowego
                     StrokeThickness = 4
                 };
 
-                int r = generatorLosowosci.Next(0, 10);
+                int r = GeneratorLosowosci.Next(0, 10);
                 if (r == 0) yellowPolyline.Stroke = System.Windows.Media.Brushes.Black;
                 if (r == 1) yellowPolyline.Stroke = System.Windows.Media.Brushes.Aqua;
                 if (r == 2) yellowPolyline.Stroke = System.Windows.Media.Brushes.Red;
@@ -167,46 +183,48 @@ namespace Symulator_Ruchu_Drogowego
                 Canvas.SetZIndex(yellowPolyline, 4);
                 rodzicObrazkow.Children.Add(yellowPolyline);
             }
-        }
 
-        private void RysujPasy()
-        {
-            foreach(WierzcholekSamochodow wierzcholek in generatorPolaczen.WierzcholkiDrog)
+            foreach(WierzcholekChodnika wierzcholek in generatorPolaczenPieszych.WierzcholkiChodnikow)
             {
-                if(wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.Pasy)
+                TextBlock yellowPolyline = new TextBlock()
                 {
-                    if(wierzcholek.CzyJestDrogaWDol() && wierzcholek.CzyJestDrogaWGore())
-                    {
-                        Image obrazek = new Image()
-                        {
-                            Height = 40,
-                            Width = 80,
-                            Source = new BitmapImage(new Uri($@"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/Obrazki/Pasy/PasyPoziomo.png", UriKind.Absolute)),
-                        };
-                        Canvas.SetZIndex(obrazek, 4);
+                    FontSize = 8,
+                    Text = wierzcholek.Krawedzie.Count.ToString()
+                };
+                Canvas.SetLeft(yellowPolyline, wierzcholek.Pozycja.X * 40 + 20);
+                Canvas.SetTop(yellowPolyline, wierzcholek.Pozycja.Y * 40 +20);
 
-                        rodzicObrazkow.Children.Add(obrazek);
-
-                        UstawPozycjeObiektu(obrazek, new Punkt<double>(wierzcholek.Pozycja.X*40*2, wierzcholek.Pozycja.Y * 40*2 + 20));
-                    }
-                    else
-                    {
-                        Image obrazek = new Image()
-                        {
-                            Height = 80,
-                            Width = 40,
-                            Source = new BitmapImage(new Uri($@"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/Obrazki/Pasy/PasyPionowo.png", UriKind.Absolute)),
-                        };
-                        Canvas.SetZIndex(obrazek, 4);
-
-                        rodzicObrazkow.Children.Add(obrazek);
-
-                        UstawPozycjeObiektu(obrazek, new Punkt<double>(wierzcholek.Pozycja.X * 40 * 2 + 20, wierzcholek.Pozycja.Y * 40 * 2));
-                    }
-                }
+                Canvas.SetZIndex(yellowPolyline, 5);
+                rodzicObrazkow.Children.Add(yellowPolyline);
             }
         }
 
+        private void RysujPasy(GeneratorPasow generatorPasow)
+        {
+            foreach(Pasy pasy in generatorPasow.Pasy)
+            {
+                Image obrazek = null;
+                if (pasy.TypPasow == TypPasow.PrzejsciePieszychPionowe)
+                    obrazek = TworzObrazekPasow(@"Pasy\PasyPionowo.png", 80, 80);
+                else if(pasy.TypPasow == TypPasow.PrzejsciePieszychPoziome)
+                    obrazek = TworzObrazekPasow(@"Pasy\PasyPoziomo.png", 80, 80);
+                else if(pasy.TypPasow == TypPasow.LiniaPrzerywanaPionowa)
+                    obrazek = TworzObrazekPasow(@"Pasy\LiniaPrzerywanaPionowo.png", 4, 80);
+                else if (pasy.TypPasow == TypPasow.LiniaPrzerywanaPozioma)
+                    obrazek = TworzObrazekPasow(@"Pasy\LiniaPrzerywanaPoziomo.png", 80, 4);
+                else if(pasy.TypPasow == TypPasow.ZakretDolPrawo)
+                    obrazek = TworzObrazekPasow(@"Pasy\PasyZakretDolPrawo.png", 80, 80);
+                else if (pasy.TypPasow == TypPasow.ZakretDolLewo)
+                    obrazek = TworzObrazekPasow(@"Pasy\PasyZakretDolLewo.png", 80, 80);
+                else if (pasy.TypPasow == TypPasow.ZakretGoraPrawo)
+                    obrazek = TworzObrazekPasow(@"Pasy\PasyZakretGoraPrawo.png", 80, 80);
+                else if (pasy.TypPasow == TypPasow.ZakretGoraLewo)
+                    obrazek = TworzObrazekPasow(@"Pasy\PasyZakretGoraLewo.png", 80, 80);
+
+                UstawPozycjeObiektu(obrazek, pasy.Pozycja);
+            }
+        }
+        
         private void Tworz4Obrazki(Punkt<double> punkt, string lokalizacjaPlku1, string lokalizacjaPlku2, string lokalizacjaPlku3, string lokalizacjaPlku4)
         {
             Image obrazek;
@@ -230,19 +248,50 @@ namespace Symulator_Ruchu_Drogowego
             Canvas.SetTop(obrazek, punkt.Y);
         }
 
-        private Image TworzObrazek(string lokalizacjaPlku, int zIndex = 1)
+        private Image TworzObrazek(string lokalizacjaPliku, int zIndex = 1)
         {
             Image obrazek = new Image()
             {
                 Height = 40,
                 Width = 40,
-                Source = new BitmapImage(new Uri($@"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/Obrazki/{lokalizacjaPlku}", UriKind.Absolute)),
+                Source = new BitmapImage(new Uri($@"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/Obrazki/{lokalizacjaPliku}", UriKind.Absolute)),
             };
 
             Canvas.SetZIndex(obrazek, zIndex);
             rodzicObrazkow.Children.Add(obrazek);
 
             return obrazek;
+        }
+
+        private Image TworzObrazekPasow(string lokalizacjaPliku, int szerokosc, int wysokosc)
+        {
+            Image obrazek = new Image()
+            {
+                Height = wysokosc,
+                Width = szerokosc,
+                Source = new BitmapImage(new Uri($@"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/Obrazki/{lokalizacjaPliku}", UriKind.Absolute)),
+            };
+
+            Canvas.SetZIndex(obrazek, 2);
+            rodzicObrazkow.Children.Add(obrazek);
+
+            return obrazek;
+        }
+
+        private void TworzIUstawObrazekOzdoby(string lokalizacjaPliku, Punkt<double> pozycja)
+        {
+            BitmapImage zrodlo = new BitmapImage(new Uri($@"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/Obrazki/{lokalizacjaPliku}", UriKind.Absolute));
+            Image obrazek = new Image()
+            {
+                Height = zrodlo.Height / 32 * 30,
+                Width = zrodlo.Width / 32 * 30,
+                Source = zrodlo
+            };
+
+            Canvas.SetZIndex(obrazek, 2);
+            rodzicObrazkow.Children.Add(obrazek);
+
+            UstawPozycjeObiektu(obrazek, new Punkt<double>(pozycja.X * 40 + ( 40 - obrazek.Width)/2, pozycja.Y * 40 + (35 - obrazek.Height)));
         }
     }
 }
