@@ -8,10 +8,10 @@ namespace Symulator_Ruchu_Drogowego
 {
     public class GeneratorPolaczenSamochodow
     {
-        public readonly int GRANICA_DOLNA;
-        public readonly int GRANICA_GORNA = -1;
-        public readonly int GRANICA_PRAWA;
-        public readonly int GRANICA_LEWA = -1;
+        public static int GRANICA_DOLNA;
+        public static int GRANICA_GORNA = -1;
+        public static int GRANICA_PRAWA;
+        public static int GRANICA_LEWA = -1;
 
         public List<WierzcholekDrogi> WierzcholkiDrog { get; private set; } = new List<WierzcholekDrogi>();
 
@@ -32,6 +32,7 @@ namespace Symulator_Ruchu_Drogowego
             RedukujPolaczenia();
             GenerujPrzejsciaPieszych();
             ZamienDrogiNaWierzcholki();
+            DodajInterfejsy();
 
             WyszukiwanieDrogi sprawdzeniePoprawnosciPolaczen = new WyszukiwanieDrogi(WierzcholkiDrog.ConvertAll(o => (WierzcholekGrafu)o));
             if (!sprawdzeniePoprawnosciPolaczen.CzyGrafSpojny())
@@ -56,19 +57,19 @@ namespace Symulator_Ruchu_Drogowego
             {
                 int wylosowanyBok = GeneratorPoziomu.GeneratorLosowosci.Next(0, 4);
                 int rozmiarMapy = wylosowanyBok == 0 || wylosowanyBok == 2 ? rozmiarMapyX : rozmiarMapyY;
-                int wylosowanaKomorka = GeneratorPoziomu.GeneratorLosowosci.Next(0, rozmiarMapy - 4);               
+                int wylosowanaKomorka = GeneratorPoziomu.GeneratorLosowosci.Next(0, rozmiarMapy - 4);
 
                 if (tablicaOznaczenWejsc[wylosowanyBok][wylosowanaKomorka] == false)
                 {
                     tablicaOznaczenWejsc[wylosowanyBok][wylosowanaKomorka] = true;
-                    if(wylosowanaKomorka>0)
+                    if (wylosowanaKomorka > 0)
                         tablicaOznaczenWejsc[wylosowanyBok][wylosowanaKomorka - 1] = true;
                     if (wylosowanaKomorka < rozmiarMapy - 5)
                         tablicaOznaczenWejsc[wylosowanyBok][wylosowanaKomorka + 1] = true;
 
                     if (wylosowanyBok == 0) // Góra
-                        WierzcholkiDrog.Add(new WierzcholekDrogi(new Punkt<double>(wylosowanaKomorka + 2, GRANICA_GORNA),TypWierzcholkaSamochodow.PunktWejscia));
-                    else if(wylosowanyBok == 1) // Prawa
+                        WierzcholkiDrog.Add(new WierzcholekDrogi(new Punkt<double>(wylosowanaKomorka + 2, GRANICA_GORNA), TypWierzcholkaSamochodow.PunktWejscia));
+                    else if (wylosowanyBok == 1) // Prawa
                         WierzcholkiDrog.Add(new WierzcholekDrogi(new Punkt<double>(GRANICA_PRAWA, wylosowanaKomorka + 2), TypWierzcholkaSamochodow.PunktWejscia));
                     else if (wylosowanyBok == 2) // Dół
                         WierzcholkiDrog.Add(new WierzcholekDrogi(new Punkt<double>(wylosowanaKomorka + 2, GRANICA_DOLNA), TypWierzcholkaSamochodow.PunktWejscia));
@@ -85,7 +86,7 @@ namespace Symulator_Ruchu_Drogowego
         /// </summary>
         private void GenerujPoloczeniaKonieczne()
         {
-            Punkt<double> punktGorny =  new Punkt<double>(0, rozmiarMapyY / 2);
+            Punkt<double> punktGorny = new Punkt<double>(0, rozmiarMapyY / 2);
             Punkt<double> punktDolny = new Punkt<double>(0, rozmiarMapyY / 2);
             Punkt<double> punktLewy = new Punkt<double>(rozmiarMapyX / 2, 0);
             Punkt<double> punktPrawy = new Punkt<double>(rozmiarMapyX / 2, 0);
@@ -102,13 +103,13 @@ namespace Symulator_Ruchu_Drogowego
                     punktLewy = wierzcholek.Pozycja;
             }
 
-            List<WierzcholekDrogi> punktyWejscia = WierzcholkiDrog.ToList(); 
+            List<WierzcholekDrogi> punktyWejscia = WierzcholkiDrog.ToList();
             foreach (WierzcholekDrogi wierzcholek in punktyWejscia)
             {
-                Punkt<double> punktPrzeciecia = new Punkt<double>(0,0);
+                Punkt<double> punktPrzeciecia = new Punkt<double>(0, 0);
 
                 if (wierzcholek.Pozycja.Y == GRANICA_GORNA) // Góra
-                    punktPrzeciecia = new Punkt<double>(wierzcholek.Pozycja.X, punktGorny.Y);                
+                    punktPrzeciecia = new Punkt<double>(wierzcholek.Pozycja.X, punktGorny.Y);
                 else if (wierzcholek.Pozycja.X == GRANICA_PRAWA) // Prawa
                     punktPrzeciecia = new Punkt<double>(punktPrawy.X, wierzcholek.Pozycja.Y);
                 else if (wierzcholek.Pozycja.Y == GRANICA_DOLNA) // Dół
@@ -129,19 +130,19 @@ namespace Symulator_Ruchu_Drogowego
             List<WierzcholekDrogi> skrzyzowania = WierzcholkiDrog.FindAll(o => o.TypWierzcholka == TypWierzcholkaSamochodow.Skrzyzowanie);
             foreach (WierzcholekDrogi wierzcholek in skrzyzowania)
             {
-                WierzcholekDrogi wlasciwy = null;         
+                WierzcholekDrogi wlasciwy = null;
                 foreach (WierzcholekDrogi potencjalny in skrzyzowania)
                 {
-                    if(wierzcholek != potencjalny && wierzcholek.Krawedzie.Find(o => o.ZwrocPrzeciwnyWierzcholek(wierzcholek) == potencjalny) == null)
+                    if (wierzcholek != potencjalny && wierzcholek.Krawedzie.Find(o => o.ZwrocPrzeciwnyWierzcholek(wierzcholek) == potencjalny) == null)
                     {
                         if ((wlasciwy == null || Punkt<double>.Odleglosc(wlasciwy.Pozycja, wierzcholek.Pozycja) > Punkt<double>.Odleglosc(potencjalny.Pozycja, wierzcholek.Pozycja)) &&
-                            Punkt<double>.ZwrocRelacje(wierzcholek.Pozycja,potencjalny.Pozycja) != Relacja.Brak && 
+                            Punkt<double>.ZwrocRelacje(wierzcholek.Pozycja, potencjalny.Pozycja) != Relacja.Brak &&
                             !CzyIstniejeWierzcholekPomiedzy(wierzcholek, potencjalny))
-                            wlasciwy = potencjalny;                     
+                            wlasciwy = potencjalny;
                     }
                 }
-                if(wlasciwy != null)             
-                    drogi.Add(KrawedzGrafu.StworzDroge(wlasciwy, wierzcholek));                        
+                if (wlasciwy != null)
+                    drogi.Add(KrawedzGrafu.StworzDroge(wlasciwy, wierzcholek));
             }
         }
 
@@ -151,15 +152,15 @@ namespace Symulator_Ruchu_Drogowego
         private void GenerujPrzejsciaPieszych()
         {
             List<KrawedzGrafu> drogiTymczasowe = drogi.ToList();
-            foreach(KrawedzGrafu droga in drogiTymczasowe)
+            foreach (KrawedzGrafu droga in drogiTymczasowe)
             {
-                if(droga.DlugoscKrawedzi()>1)
+                if (droga.DlugoscKrawedzi() > 1)
                 {
                     Punkt<double> punkt;
-                    if(droga.ZwrocRelacje() == Relacja.Pionowe)
+                    if (droga.ZwrocRelacje() == Relacja.Pionowe)
                         punkt = new Punkt<double>(droga.WierzcholekA.Pozycja.X, (int)(droga.DlugoscKrawedzi() / 2) + droga.WierzcholekA.Pozycja.Y);
                     else
-                        punkt = new Punkt<double>((int)(droga.DlugoscKrawedzi() / 2) + droga.WierzcholekA.Pozycja.X,  droga.WierzcholekA.Pozycja.Y);
+                        punkt = new Punkt<double>((int)(droga.DlugoscKrawedzi() / 2) + droga.WierzcholekA.Pozycja.X, droga.WierzcholekA.Pozycja.Y);
 
                     WierzcholekDrogi wierzcholekA = (WierzcholekDrogi)droga.WierzcholekA;
                     WierzcholekDrogi wierzcholekB = (WierzcholekDrogi)droga.WierzcholekB;
@@ -178,18 +179,18 @@ namespace Symulator_Ruchu_Drogowego
         /// </summary>
         private void RedukujPolaczenia()
         {
-            for(int i=0; i< WierzcholkiDrog.Count; ++i)
+            for (int i = 0; i < WierzcholkiDrog.Count; ++i)
             {
                 WierzcholekDrogi wierzcholek = WierzcholkiDrog[i];
-                if(wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.Skrzyzowanie)
+                if (wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.Skrzyzowanie)
                 {
                     if (wierzcholek.Krawedzie.Count == 1)
                     {
-                        for(int j=wierzcholek.Krawedzie.Count-1; j>=0; --j)
+                        for (int j = wierzcholek.Krawedzie.Count - 1; j >= 0; --j)
                             drogi.Remove(wierzcholek.Krawedzie[j].UsunKrawedz());
                         WierzcholkiDrog.Remove(wierzcholek);
-                    }                      
-                    else if(wierzcholek.Krawedzie.Count == 2)
+                    }
+                    else if (wierzcholek.Krawedzie.Count == 2)
                     {
                         if (Punkt<double>.ZwrocRelacje(wierzcholek.Krawedzie[0].ZwrocPrzeciwnyWierzcholek(wierzcholek).Pozycja, wierzcholek.Krawedzie[1].ZwrocPrzeciwnyWierzcholek(wierzcholek).Pozycja) == Relacja.Brak)
                             wierzcholek.TypWierzcholka = TypWierzcholkaSamochodow.Zakret;
@@ -202,7 +203,7 @@ namespace Symulator_Ruchu_Drogowego
                         }
                     }
                 }
-                else if(wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.PunktWejscia)
+                else if (wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.PunktWejscia)
                 {
                     if (wierzcholek.Krawedzie.Count == 0)
                         WierzcholkiDrog.Remove(wierzcholek);
@@ -216,7 +217,7 @@ namespace Symulator_Ruchu_Drogowego
         private void ZamienDrogiNaWierzcholki()
         {
             List<KrawedzGrafu> tymczasowaLista = drogi.ToList();
-            foreach(KrawedzGrafu droga in tymczasowaLista)
+            foreach (KrawedzGrafu droga in tymczasowaLista)
             {
                 WierzcholekDrogi pierwszy = (WierzcholekDrogi)droga.WierzcholekA;
                 for (int i = 0; i < droga.DlugoscKrawedzi(); ++i)
@@ -227,7 +228,7 @@ namespace Symulator_Ruchu_Drogowego
                     else
                         punkt = new Punkt<double>(pierwszy.Pozycja.X + 1, pierwszy.Pozycja.Y);
 
-                    WierzcholekDrogi kolejny = DodajLubZnajdzWierzcholek(punkt,TypWierzcholkaSamochodow.Droga);
+                    WierzcholekDrogi kolejny = DodajLubZnajdzWierzcholek(punkt, TypWierzcholkaSamochodow.Droga);
 
                     drogi.Add(KrawedzGrafu.StworzDroge(pierwszy, kolejny));
                     pierwszy = kolejny;
@@ -235,6 +236,17 @@ namespace Symulator_Ruchu_Drogowego
                 drogi.Add(KrawedzGrafu.StworzDroge(pierwszy, (WierzcholekDrogi)droga.WierzcholekB));
 
                 drogi.Remove(droga.UsunKrawedz());
+            }
+        }
+
+        /// <summary>
+        /// Używa "dekoratora" do stworzenia obiektów obsługujących połączenia
+        /// </summary>
+        private void DodajInterfejsy()
+        {
+            foreach(WierzcholekDrogi wierzcholek in WierzcholkiDrog)
+            {
+                wierzcholek.UstawObiektDrogi();
             }
         }
 

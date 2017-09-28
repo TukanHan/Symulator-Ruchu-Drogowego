@@ -14,6 +14,7 @@ namespace Symulator_Ruchu_Drogowego
 
         private int maksymalnaLiczbaPieszych;
         private DispatcherTimer zdarzenieLosowania = new DispatcherTimer();
+        private DispatcherTimer zdarzeniePoruszania = new DispatcherTimer();
 
         public KontrolerPieszych(List<WierzcholekChodnika> wierzcholkiPieszych,int maksymalnaLiczbaPieszych)
         {
@@ -26,8 +27,20 @@ namespace Symulator_Ruchu_Drogowego
             zdarzenieLosowania.Tick += (s, args) => KontrolujLiczbe();
             zdarzenieLosowania.Start();
 
+            zdarzeniePoruszania.Interval = new TimeSpan(0, 0, 0, 0, 40);
+            zdarzeniePoruszania.Tick += (s, args) => PoruszajPieszymi();
+            zdarzeniePoruszania.Start();
+
             for (int i = 0; i < maksymalnaLiczbaPieszych / 2; ++i)
                 DodajPostac();
+        }
+
+        private void PoruszajPieszymi()
+        {
+            for(int i=Pieszy.Piesi.Count-1; i>=0; --i)
+            {
+                Pieszy.Piesi[i].PoruszaniePostaci();
+            }
         }
 
         private void KontrolujLiczbe()

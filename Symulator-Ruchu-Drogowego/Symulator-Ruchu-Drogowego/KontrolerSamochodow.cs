@@ -14,6 +14,7 @@ namespace Symulator_Ruchu_Drogowego
 
         private int maxLiczbaSamochodow;
         private DispatcherTimer zdarzenieLosowania = new DispatcherTimer();
+        private DispatcherTimer zdarzeniePoruszania = new DispatcherTimer();
 
         public KontrolerSamochodow(List<WierzcholekDrogi> wierzcholkiDrogi, int maxLiczbaSamochodow)
         {
@@ -26,10 +27,21 @@ namespace Symulator_Ruchu_Drogowego
             zdarzenieLosowania.Tick += (s, args) => KontrolujLiczbe();
             zdarzenieLosowania.Start();
 
+            zdarzeniePoruszania.Interval = new TimeSpan(0, 0, 0, 0, 20);
+            zdarzeniePoruszania.Tick += (s, args) => PoruszajSamochodami();
+            zdarzeniePoruszania.Start();
+
             for (int i = 0; i < maxLiczbaSamochodow / 2; ++i)
                 DodajSamochod();
         }
 
+        private void PoruszajSamochodami()
+        {
+            for (int i = Samochod.Samochody.Count - 1; i >= 0; --i)
+            {
+                Samochod.Samochody[i].PoruszanieSamochodem();
+            }
+        }
 
         private void KontrolujLiczbe()
         {

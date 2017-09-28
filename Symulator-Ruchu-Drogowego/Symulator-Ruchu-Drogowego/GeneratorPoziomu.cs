@@ -32,7 +32,7 @@ namespace Symulator_Ruchu_Drogowego
             RysujDrogi();
             RysujBudynki(generatorBudynkow);
             RysujMape(generatorBudynkow);
-            RysujKonturChodnika();
+            //RysujKonturChodnika();
             RysujPasy(generatorPasow);
         }
 

@@ -55,17 +55,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ObiektDrogiPasy.cs" />
     <Compile Include="GeneratorPasow.cs" />
     <Compile Include="GeneratorPrzestrzeni.cs" />
     <Compile Include="GeneratorPolaczenPieszych.cs" />
     <Compile Include="GeneratorPoziomu.cs" />
     <Compile Include="Geometria.cs" />
+    <Compile Include="IObiektDrogi.cs" />
     <Compile Include="KontrolerPieszych.cs" />
     <Compile Include="KontrolerRuchu.cs" />
     <Compile Include="KontrolerSamochodow.cs" />
     <Compile Include="KrawedzGrafu.cs" />
+    <Compile Include="ObiektDrogiPunktWejscia.cs" />
+    <Compile Include="ObiektDrogiSkrzyzowanie.cs" />
+    <Compile Include="ObiektDrogiZakret.cs" />
     <Compile Include="Pieszy.cs" />
     <Compile Include="Samochod.cs" />
+    <Compile Include="ObiektDrogiDroga.cs" />
     <Compile Include="WierzcholekGrafu.cs" />
     <Compile Include="Punkt.cs" />
     <Compile Include="WierzcholekDrogi.cs" />

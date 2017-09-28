@@ -17,24 +17,17 @@ namespace Symulator_Ruchu_Drogowego
         public static List<Pieszy> Piesi { get; set; }
 
         private Image obrazek;
-        //private WierzcholekGrafu obecnyWierzcholek;
         private List<WierzcholekGrafu> trasa;
-        private DispatcherTimer zdarzeniePoruszania = new DispatcherTimer();
 
         public Pieszy(WierzcholekGrafu start, List<WierzcholekGrafu> trasa)
         {
-            //this.obecnyWierzcholek = start;
             this.trasa = trasa;
-
-            zdarzeniePoruszania.Interval = new TimeSpan(0, 0, 0, 0, 40);
-            zdarzeniePoruszania.Tick += (s, args) => PoruszaniePostaci();
-            zdarzeniePoruszania.Start();
 
             TworzObrazek();
             UstawPozycje(new Punkt<double>(start.Pozycja.X*40 + obrazek.Width / 2, start.Pozycja.Y * 40 + obrazek.Height / 2));
         }
 
-        private void PoruszaniePostaci()
+        public void PoruszaniePostaci()
         {
             if (trasa.Count > 0)
             {
@@ -82,7 +75,6 @@ namespace Symulator_Ruchu_Drogowego
 
         public void Dispose()
         {
-            zdarzeniePoruszania.Stop();
             MainWindow.Warstwa.Children.Remove(obrazek);
             Piesi.Remove(this);
         }

@@ -37,7 +37,7 @@ namespace Symulator_Ruchu_Drogowego
                 try
                 {
                     GeneratorPoziomu generatorPoziomu = new GeneratorPoziomu(warstwa, szerokosc, wysokosc, liczbaWejsc);
-                    KontrolerRuchu kontorlerRuchu = new KontrolerRuchu(generatorPoziomu.WierzcholkiChodnikow, 30, generatorPoziomu.WierzcholkiDrog, 10);
+                    KontrolerRuchu kontorlerRuchu = new KontrolerRuchu(generatorPoziomu.WierzcholkiChodnikow, 30, generatorPoziomu.WierzcholkiDrog, 20);
                     wygenerowanoMape = true;
                 }
                 catch (Exception e)
