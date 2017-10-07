@@ -55,27 +55,35 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ObiektDrogiPasy.cs" />
-    <Compile Include="GeneratorPasow.cs" />
-    <Compile Include="GeneratorPrzestrzeni.cs" />
-    <Compile Include="GeneratorPolaczenPieszych.cs" />
-    <Compile Include="GeneratorPoziomu.cs" />
+    <Compile Include="PrzeszukiwanieDFS.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\IWejscieNaElement.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\WejscieNaPrzejscieDlaPieszych.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\WejscieNaChodnik.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\WejscieNaPasy.cs" />
+    <Compile Include="Generatory\GeneratorZnakowPoziomych.cs" />
+    <Compile Include="Generatory\GeneratorPrzestrzeni.cs" />
+    <Compile Include="Generatory\GeneratorPolaczenPieszych.cs" />
+    <Compile Include="Generatory\GeneratorPoziomu.cs" />
     <Compile Include="Geometria.cs" />
-    <Compile Include="IObiektDrogi.cs" />
-    <Compile Include="KontrolerPieszych.cs" />
-    <Compile Include="KontrolerRuchu.cs" />
-    <Compile Include="KontrolerSamochodow.cs" />
-    <Compile Include="KrawedzGrafu.cs" />
-    <Compile Include="ObiektDrogiPunktWejscia.cs" />
-    <Compile Include="ObiektDrogiSkrzyzowanie.cs" />
-    <Compile Include="ObiektDrogiZakret.cs" />
-    <Compile Include="Pieszy.cs" />
-    <Compile Include="Samochod.cs" />
-    <Compile Include="ObiektDrogiDroga.cs" />
-    <Compile Include="WierzcholekGrafu.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\IWejscieNaDroge.cs" />
+    <Compile Include="KontroleryRuchu\KontrolerPieszych.cs" />
+    <Compile Include="KontroleryRuchu\KontrolerRuchu.cs" />
+    <Compile Include="KontroleryRuchu\KontrolerSamochodow.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\KrawedzGrafu.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\WejscieNaPunktWejscia.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\WejscieNaSkrzyzowanie.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\WejscieNaZakret.cs" />
+    <Compile Include="KontroleryRuchu\Pieszy.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\PrzejscieDlaPieszych.cs" />
+    <Compile Include="KontroleryRuchu\Samochod.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\WejscieNaDroge.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\WierzcholekGrafu.cs" />
     <Compile Include="Punkt.cs" />
-    <Compile Include="WierzcholekDrogi.cs" />
-    <Compile Include="WierzcholekChodnika.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\WierzcholekDrogi.cs" />
+    <Compile Include="StrukturyWyszukiwaniaDrogi\WierzcholekChodnika.cs" />
+    <Compile Include="Symulacja.xaml.cs">
+      <DependentUpon>Symulacja.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WyszukiwanieDrogi.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -85,11 +93,15 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="GeneratorPolaczenSamochodow.cs" />
+    <Compile Include="Generatory\GeneratorPolaczenSamochodow.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Symulacja.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -252,6 +264,13 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Obrazki\Samochody\samochod1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Samochody\samochod4.png" />
+    <Resource Include="Obrazki\Samochody\samochod5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Obrazki\Samochody\samochod6.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -16,16 +16,13 @@ namespace Symulator_Ruchu_Drogowego
         public List<WierzcholekDrogi> WierzcholkiDrog { get { return generatorPolaczen.WierzcholkiDrog; } }
         public List<WierzcholekChodnika> WierzcholkiChodnikow { get { return generatorPolaczenPieszych.WierzcholkiChodnikow; } }
 
-        private Canvas rodzicObrazkow;
         private GeneratorPolaczenSamochodow generatorPolaczen;
         private GeneratorPolaczenPieszych generatorPolaczenPieszych;
 
         public GeneratorPoziomu(Canvas rodzicObrazkow, int szerokosc, int wysokosc, int liczbaWejsc)
         {
-            this.rodzicObrazkow = rodzicObrazkow;
-
             generatorPolaczen = new GeneratorPolaczenSamochodow(szerokosc, wysokosc, liczbaWejsc);
-            GeneratorPasow generatorPasow = new GeneratorPasow(generatorPolaczen);
+            GeneratorZnakowPoziomych generatorPasow = new GeneratorZnakowPoziomych(generatorPolaczen);
             GeneratorPrzestrzeni generatorBudynkow = new GeneratorPrzestrzeni(szerokosc, wysokosc, generatorPolaczen);
             generatorPolaczenPieszych = new GeneratorPolaczenPieszych(szerokosc, wysokosc, generatorPolaczen, generatorBudynkow);
 
@@ -85,7 +82,7 @@ namespace Symulator_Ruchu_Drogowego
 
         private void RysujBudynki(GeneratorPrzestrzeni generatorBudynkow)
         {
-            foreach (Kwadrat budynek in generatorBudynkow.Budynki)
+            foreach (Prostokat budynek in generatorBudynkow.Budynki)
             {
                 string folder = $"Budynek{GeneratorLosowosci.Next(1, 6)}";
 
@@ -181,7 +178,7 @@ namespace Symulator_Ruchu_Drogowego
                 yellowPolyline.Points = polygonPoints;
 
                 Canvas.SetZIndex(yellowPolyline, 4);
-                rodzicObrazkow.Children.Add(yellowPolyline);
+                Symulacja.Warstwa.Children.Add(yellowPolyline);
             }
 
             foreach(WierzcholekChodnika wierzcholek in generatorPolaczenPieszych.WierzcholkiChodnikow)
@@ -195,13 +192,13 @@ namespace Symulator_Ruchu_Drogowego
                 Canvas.SetTop(yellowPolyline, wierzcholek.Pozycja.Y * 40 +20);
 
                 Canvas.SetZIndex(yellowPolyline, 5);
-                rodzicObrazkow.Children.Add(yellowPolyline);
+                Symulacja.Warstwa.Children.Add(yellowPolyline);
             }
         }
 
-        private void RysujPasy(GeneratorPasow generatorPasow)
+        private void RysujPasy(GeneratorZnakowPoziomych generatorPasow)
         {
-            foreach(Pasy pasy in generatorPasow.Pasy)
+            foreach(ZnakPoziomy pasy in generatorPasow.ZnakiPoziome)
             {
                 Image obrazek = null;
                 if (pasy.TypPasow == TypPasow.PrzejsciePieszychPionowe)
@@ -258,38 +255,25 @@ namespace Symulator_Ruchu_Drogowego
             };
 
             Canvas.SetZIndex(obrazek, zIndex);
-            rodzicObrazkow.Children.Add(obrazek);
+            Symulacja.Warstwa.Children.Add(obrazek);
 
             return obrazek;
         }
 
         private Image TworzObrazekPasow(string lokalizacjaPliku, int szerokosc, int wysokosc)
         {
-            Image obrazek = new Image()
-            {
-                Height = wysokosc,
-                Width = szerokosc,
-                Source = new BitmapImage(new Uri($@"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/Obrazki/{lokalizacjaPliku}", UriKind.Absolute)),
-            };
-
-            Canvas.SetZIndex(obrazek, 2);
-            rodzicObrazkow.Children.Add(obrazek);
+            Image obrazek = TworzObrazek(lokalizacjaPliku, 2);
+            obrazek.Width = szerokosc;
+            obrazek.Height = wysokosc;
 
             return obrazek;
         }
 
         private void TworzIUstawObrazekOzdoby(string lokalizacjaPliku, Punkt<double> pozycja)
         {
-            BitmapImage zrodlo = new BitmapImage(new Uri($@"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/Obrazki/{lokalizacjaPliku}", UriKind.Absolute));
-            Image obrazek = new Image()
-            {
-                Height = zrodlo.Height / 32 * 30,
-                Width = zrodlo.Width / 32 * 30,
-                Source = zrodlo
-            };
-
-            Canvas.SetZIndex(obrazek, 2);
-            rodzicObrazkow.Children.Add(obrazek);
+            Image obrazek = TworzObrazek(lokalizacjaPliku, 2);
+            obrazek.Height = obrazek.Source.Height / 32 * 30;
+            obrazek.Width = obrazek.Source.Width / 32 * 30;
 
             UstawPozycjeObiektu(obrazek, new Punkt<double>(pozycja.X * 40 + ( 40 - obrazek.Width)/2, pozycja.Y * 40 + (35 - obrazek.Height)));
         }

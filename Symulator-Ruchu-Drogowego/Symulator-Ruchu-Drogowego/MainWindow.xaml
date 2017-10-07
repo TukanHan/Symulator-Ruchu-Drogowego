@@ -5,11 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Symulator_Ruchu_Drogowego"
         mc:Ignorable="d"
-        Title="Symulator ruchu drogowego" Height="675" Width="965">
-    <Canvas Name="warstwa">
-        <Canvas.Background>
-            <ImageBrush ImageSource="Obrazki/Inne/Trawa.png" TileMode="Tile" Viewport="0,0,40,40" ViewportUnits="Absolute"/>
-        </Canvas.Background>
+        Title="Ustawienia symulacji"
+        Height="350" Width="300"
+        ResizeMode="CanMinimize">
+    <Grid>
+        <TextBlock HorizontalAlignment="Left" Height="30" Margin="25,35,0,0" VerticalAlignment="Top" Width="105" FontFamily="Microsoft JhengHei UI Light" FontSize="18"><Run Text="Szeroko"/><Run Text="ść"/></TextBlock>
+        <Slider x:Name="szerokosc" HorizontalAlignment="Left" Height="21" Margin="145,35,0,0" VerticalAlignment="Top" Width="120" Minimum="7" Maximum="15" LargeChange="0" Value="12"/>
+        <TextBlock HorizontalAlignment="Left" Height="30" Margin="25,70,0,0" Text="Wysokość" VerticalAlignment="Top" Width="105" FontFamily="Microsoft JhengHei UI Light" FontSize="18"/>
+        <Slider x:Name="wysokosc" HorizontalAlignment="Left" Height="21" Margin="145,70,0,0" VerticalAlignment="Top" Width="120" Minimum="5" Maximum="11" Value="8"/>
+        <TextBlock HorizontalAlignment="Left" Height="30" Margin="25,105,0,0" Text="Wejścia" VerticalAlignment="Top" Width="114" FontFamily="Microsoft JhengHei UI Light" FontSize="18"/>
+        <Slider x:Name="punktyWejscia" HorizontalAlignment="Left" Height="21" Margin="145,105,0,0" VerticalAlignment="Top" Width="120" Minimum="5" Maximum="15" Value="10"/>
+        <TextBlock HorizontalAlignment="Left" Height="30" Margin="25,140,0,0" Text="Piesi" VerticalAlignment="Top" Width="114" FontFamily="Microsoft JhengHei UI Light" FontSize="18"/>
+        <Slider x:Name="liczbaPieszych" HorizontalAlignment="Left" Height="21" Margin="145,140,0,0" VerticalAlignment="Top" Width="120" Minimum="20" Maximum="60" Value="40"/>
+        <TextBlock HorizontalAlignment="Left" Height="30" Margin="25,175,0,0" VerticalAlignment="Top" Width="114" FontFamily="Microsoft JhengHei UI Light" FontSize="16"><Run FontSize="18" Text="Samochody"/></TextBlock>
+        <Slider x:Name="liczbaSamochodow" HorizontalAlignment="Left" Height="21" Margin="145,175,0,0" VerticalAlignment="Top" Width="120" Minimum="20" Maximum="40" Value="30"/>
+        <Button x:Name="przyciskGeneruj" Content="Generuj Symulacje" HorizontalAlignment="Left" Height="35" Margin="70,236,0,0" VerticalAlignment="Top" Width="165" FontFamily="Microsoft JhengHei UI Light" FontSize="16" Click="przyciskGeneruj_Click"/>
 
-    </Canvas>
+    </Grid>
+
 </Window>

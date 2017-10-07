@@ -10,10 +10,19 @@ namespace Symulator_Ruchu_Drogowego
     {
         public static Random GeneratorLosowosci { get; } = new Random();
 
+        private KontrolerPieszych kontrolerPieszych;
+        private KontrolerSamochodow kontolerSamochodow;
+
         public KontrolerRuchu(List<WierzcholekChodnika> wierzcholkiPieszych, int maxLiczbaPieszych, List<WierzcholekDrogi> wierzcholkiDrogi, int maxLiczbaSamochodow)
         {
-            KontrolerPieszych kontrolerPieszych = new KontrolerPieszych(wierzcholkiPieszych, maxLiczbaPieszych);
-            KontrolerSamochodow kontolerSamochodow = new KontrolerSamochodow(wierzcholkiDrogi,maxLiczbaSamochodow);
+            kontrolerPieszych = new KontrolerPieszych(wierzcholkiPieszych, maxLiczbaPieszych);
+            kontolerSamochodow = new KontrolerSamochodow(wierzcholkiDrogi,maxLiczbaSamochodow);
+        }
+
+        public void Zatrzymaj()
+        {
+            kontrolerPieszych.Zatrzymaj();
+            kontolerSamochodow.Zatrzymaj();
         }
     }
 }

@@ -8,10 +8,10 @@ namespace Symulator_Ruchu_Drogowego
 {
     public class GeneratorPolaczenPieszych
     {
-        public readonly int GRANICA_DOLNA;
-        public readonly int GRANICA_GORNA = 0;
-        public readonly int GRANICA_PRAWA;
-        public readonly int GRANICA_LEWA = 0;
+        public static int GRANICA_DOLNA;
+        public static int GRANICA_GORNA = 0;
+        public static int GRANICA_PRAWA;
+        public static int GRANICA_LEWA = 0;
 
         public List<WierzcholekChodnika> WierzcholkiChodnikow { get; private set; }
         public List<KrawedzGrafu> Chodniki { get; private set; }
@@ -29,8 +29,8 @@ namespace Symulator_Ruchu_Drogowego
             RedukujPolaczenia();
             OznaczPunktyWejscia();
 
-            WyszukiwanieDrogi sprawdzeniePoprawnosciPolaczen = new WyszukiwanieDrogi(WierzcholkiChodnikow.ConvertAll(o => (WierzcholekGrafu)o));
-            if (!sprawdzeniePoprawnosciPolaczen.CzyGrafSpojny())
+            PrzeszukiwanieDFS przeszukiwanieDFS = new PrzeszukiwanieDFS(WierzcholkiChodnikow.ConvertAll(o => (WierzcholekGrafu)o));
+            if (!przeszukiwanieDFS.CzyGrafSpojny())
                 throw new Exception("Graf połączeń pieszych nie spójny");
         }
 
@@ -74,15 +74,22 @@ namespace Symulator_Ruchu_Drogowego
                     {
                         wierzcholekA = DodajLubZnajdzWierzcholek(new Punkt<double>(wierzcholek.Pozycja.X * 2 -0.5, wierzcholek.Pozycja.Y * 2 + 0.5));
                         wierzcholekB = DodajLubZnajdzWierzcholek(new Punkt<double>(wierzcholek.Pozycja.X * 2 + 1.5, wierzcholek.Pozycja.Y * 2 + 0.5));
+
+                        wierzcholekA.UstawObiektWejscia(((WejscieNaPasy)wierzcholek.ObiektDrogi).PrzejscieDlaPieszych, wierzcholekB);
+                        wierzcholekB.UstawObiektWejscia(((WejscieNaPasy)wierzcholek.ObiektDrogi).PrzejscieDlaPieszych, wierzcholekA);
                     }
                     else if (wierzcholek.CzyJestDrogaWPrawo() && wierzcholek.CzyJestDrogaWLewo())
                     {
                         wierzcholekA = DodajLubZnajdzWierzcholek(new Punkt<double>(wierzcholek.Pozycja.X * 2 + 0.5, wierzcholek.Pozycja.Y * 2 -0.5));
                         wierzcholekB = DodajLubZnajdzWierzcholek(new Punkt<double>(wierzcholek.Pozycja.X * 2 + 0.5, wierzcholek.Pozycja.Y * 2 + 1.5));
+
+                        wierzcholekA.UstawObiektWejscia(((WejscieNaPasy)wierzcholek.ObiektDrogi).PrzejscieDlaPieszych, wierzcholekB);
+                        wierzcholekB.UstawObiektWejscia(((WejscieNaPasy)wierzcholek.ObiektDrogi).PrzejscieDlaPieszych, wierzcholekA);
                     }
+
                     wierzcholekA.TypWierzcholka = TypWierzcholkaPieszych.Pasy;
                     wierzcholekB.TypWierzcholka = TypWierzcholkaPieszych.Pasy;
-
+                    
                     KrawedzGrafu krawedzA = SzukajDrogiPomiedzyPunktem(wierzcholekA.Pozycja);
                     LaczTraseWWierzcholku(krawedzA, wierzcholekA);
 

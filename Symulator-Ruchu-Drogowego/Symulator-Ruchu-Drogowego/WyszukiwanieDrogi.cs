@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace Symulator_Ruchu_Drogowego
 {
+    /// <summary>
+    /// Klasa która zajmuje się wyszukiwaniem najkrótszej drogi 
+    /// </summary>
     class WyszukiwanieDrogi
     {
+        /// <summary>
+        /// Wewnętrzna klasa pomagająca odnaleźć najkrótszą drogę w grafie
+        /// </summary>
         private class Wezel
         {
             public WierzcholekGrafu Klucz { get; }
@@ -26,39 +32,6 @@ namespace Symulator_Ruchu_Drogowego
         public WyszukiwanieDrogi(List<WierzcholekGrafu> infrastruktura)
         {
             this.infrastruktura = infrastruktura;
-        }
-
-        public bool CzyGrafSpojny()
-        {
-            Dictionary<WierzcholekGrafu, bool>  listaOdwiedzen = new Dictionary<WierzcholekGrafu, bool>();
-            for (int i = 0; i < infrastruktura.Count; ++i)
-                listaOdwiedzen.Add(infrastruktura[i], false);
-
-            PrzeszukiwanieDFS(listaOdwiedzen);
-
-            foreach (var odwiedzony in listaOdwiedzen)
-                if (!odwiedzony.Value)
-                    return false;
-
-            return true;
-        }
-
-        private void PrzeszukiwanieDFS(Dictionary<WierzcholekGrafu, bool> listaOdwiedzen)
-        {
-            Stack<WierzcholekGrafu> stos = new Stack<WierzcholekGrafu>();
-            stos.Push(infrastruktura[0]);
-            while (stos.Count > 0)
-            {
-                WierzcholekGrafu wierzcholek = stos.Pop();
-
-                if (!listaOdwiedzen[wierzcholek])
-                {
-                    listaOdwiedzen[wierzcholek] = true;
-
-                    foreach(KrawedzGrafu poloczenie in wierzcholek.Krawedzie)                   
-                        stos.Push(poloczenie.ZwrocPrzeciwnyWierzcholek(wierzcholek));                    
-                }
-            }
         }
 
         public List<WierzcholekGrafu> ZwrocScierzke(WierzcholekGrafu start, WierzcholekGrafu koniec)

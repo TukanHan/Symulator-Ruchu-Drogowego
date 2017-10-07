@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Symulator_Ruchu_Drogowego
 {
-    public class WierzcholekGrafu
+    public abstract class WierzcholekGrafu
     {
         public Punkt<double> Pozycja { get; }
         public List<KrawedzGrafu> Krawedzie { get; protected set; } = new List<KrawedzGrafu>();
@@ -19,6 +15,14 @@ namespace Symulator_Ruchu_Drogowego
         public static WierzcholekGrafu ZwrocMniejszyWierzcholek(WierzcholekGrafu wierzcholekA, WierzcholekGrafu wierzcholekB)
         {
             if (Punkt<double>.ZwrocPozycjeMniejszego(wierzcholekA.Pozycja, wierzcholekB.Pozycja).Equals(wierzcholekA.Pozycja))
+                return wierzcholekA;
+            else
+                return wierzcholekB;
+        }
+
+        public static WierzcholekGrafu ZwrocWiekszyWierzcholek(WierzcholekGrafu wierzcholekA, WierzcholekGrafu wierzcholekB)
+        {
+            if (Punkt<double>.ZwrocPozycjeWiekszego(wierzcholekA.Pozycja, wierzcholekB.Pozycja).Equals(wierzcholekA.Pozycja))
                 return wierzcholekA;
             else
                 return wierzcholekB;

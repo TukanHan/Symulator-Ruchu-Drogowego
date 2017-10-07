@@ -35,6 +35,12 @@ namespace Symulator_Ruchu_Drogowego
                 DodajPostac();
         }
 
+        public void Zatrzymaj()
+        {
+            zdarzenieLosowania.Stop();
+            zdarzeniePoruszania.Stop();
+        }
+
         private void PoruszajPieszymi()
         {
             for(int i=Pieszy.Piesi.Count-1; i>=0; --i)

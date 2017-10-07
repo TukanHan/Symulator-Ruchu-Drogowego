@@ -27,12 +27,18 @@ namespace Symulator_Ruchu_Drogowego
             zdarzenieLosowania.Tick += (s, args) => KontrolujLiczbe();
             zdarzenieLosowania.Start();
 
-            zdarzeniePoruszania.Interval = new TimeSpan(0, 0, 0, 0, 20);
+            zdarzeniePoruszania.Interval = new TimeSpan(0, 0, 0, 0, 17);
             zdarzeniePoruszania.Tick += (s, args) => PoruszajSamochodami();
             zdarzeniePoruszania.Start();
 
             for (int i = 0; i < maxLiczbaSamochodow / 2; ++i)
                 DodajSamochod();
+        }
+
+        public void Zatrzymaj()
+        {
+            zdarzenieLosowania.Stop();
+            zdarzeniePoruszania.Stop();
         }
 
         private void PoruszajSamochodami()

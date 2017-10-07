@@ -13,9 +13,8 @@ namespace Symulator_Ruchu_Drogowego
 
         public KrawedzGrafu(WierzcholekGrafu wierzcholekA, WierzcholekGrafu wierzcholekB)
         {
-            //Wierzchołek punktem bliższy 0,0 jest mniejszy
             WierzcholekA = WierzcholekGrafu.ZwrocMniejszyWierzcholek(wierzcholekA, wierzcholekB);
-            WierzcholekB = WierzcholekA == wierzcholekA ? wierzcholekB : wierzcholekA;
+            WierzcholekB = WierzcholekGrafu.ZwrocWiekszyWierzcholek(wierzcholekA, wierzcholekB);
         }
 
         public double DlugoscKrawedzi()
@@ -27,20 +26,20 @@ namespace Symulator_Ruchu_Drogowego
         {
             if (WierzcholekA == wierzcholek)
                 return WierzcholekB;
-            if (WierzcholekB == wierzcholek)
+            else if (WierzcholekB == wierzcholek)
                 return WierzcholekA;
-
-            throw new Exception("Brak połączonego wierzchołka");
+            else
+                throw new Exception("Brak połączonego wierzchołka");
         }
 
         public Relacja ZwrocRelacje()
         {
             if (WierzcholekA.Pozycja.X == WierzcholekB.Pozycja.X)
                 return Relacja.Pionowe;
-            if (WierzcholekA.Pozycja.Y == WierzcholekB.Pozycja.Y)
+            else if (WierzcholekA.Pozycja.Y == WierzcholekB.Pozycja.Y)
                 return Relacja.Poziome;
-
-            return Relacja.Brak;
+            else
+                return Relacja.Brak;
         }
 
         public KrawedzGrafu UsunKrawedz()

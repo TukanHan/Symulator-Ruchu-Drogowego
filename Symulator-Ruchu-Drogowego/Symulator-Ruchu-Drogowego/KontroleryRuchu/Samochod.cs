@@ -1,34 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 
 namespace Symulator_Ruchu_Drogowego
 {
     public class Samochod : IDisposable
     {
         public static List<Samochod> Samochody { get; set; }
-        public WierzcholekGrafu ObecnaPozycja { get; private set; }
+
+        public WierzcholekDrogi ObecnaPozycja { get; private set; }
+        public WierzcholekDrogi Cel { get; private set; }
 
         private Image obrazek;
-        private List<WierzcholekGrafu> trasa;
-        private bool czyCzekamNaPozwolenie = false;
+        private List<WierzcholekDrogi> trasa;
+        private bool czyCzekamNaPozwolenie = true;
 
         public Samochod(WierzcholekGrafu start, List<WierzcholekGrafu> trasa)
         {
-            this.trasa = trasa;
-            this.ObecnaPozycja = start;
+            this.trasa = trasa.ConvertAll(obiekt => (WierzcholekDrogi)obiekt);
+            this.ObecnaPozycja = (WierzcholekDrogi)start;
 
             TworzObrazek();
 
-            Punkt<double> przesuniecie = ((ObiektDrogiPunktWejscia)((WierzcholekDrogi)start).ObiektDrogi).PunktWejsciowy();
+            Punkt<double> przesuniecie = ((WejscieNaPunktWejscia)ObecnaPozycja.ObiektDrogi).PunktWejsciowy();
             UstawPozycje(new Punkt<double>(start.Pozycja.X * 80 + przesuniecie.X, start.Pozycja.Y * 80 + przesuniecie.Y));
         }
 
@@ -40,10 +38,10 @@ namespace Symulator_Ruchu_Drogowego
                 {
                     Punkt<double> przesuniecie;
 
-                    if(((WierzcholekDrogi)trasa[0]).TypWierzcholka == TypWierzcholkaSamochodow.Skrzyzowanie)
-                        przesuniecie = ((ObiektDrogiSkrzyzowanie)((WierzcholekDrogi)trasa[0]).ObiektDrogi).Przesuniecie(ObecnaPozycja.Pozycja,trasa[1].Pozycja);
+                    if(trasa[0].TypWierzcholka == TypWierzcholkaSamochodow.Skrzyzowanie)
+                        przesuniecie = ((WejscieNaSkrzyzowanie)trasa[0].ObiektDrogi).Przesuniecie(ObecnaPozycja.Pozycja,trasa[1].Pozycja);
                     else
-                        przesuniecie = ((WierzcholekDrogi)trasa[0]).ObiektDrogi.Przesuniecie(ObecnaPozycja.Pozycja);
+                        przesuniecie = trasa[0].ObiektDrogi.Przesuniecie(ObecnaPozycja.Pozycja);
 
                     Geometria geometriaPieszyCel = new Geometria(new Punkt<double>(trasa[0].Pozycja.X * 80 + przesuniecie.X, trasa[0].Pozycja.Y * 80 + przesuniecie.Y),
                                                                 new Punkt<double>(ZwrocPozycje().X + obrazek.Width / 2, ZwrocPozycje().Y + obrazek.Height / 2));
@@ -59,11 +57,6 @@ namespace Symulator_Ruchu_Drogowego
                     {
                         ObecnaPozycja = trasa[0];
 
-
-                        //W razie chęci poprawy - usunąć
-                        ((WierzcholekDrogi)ObecnaPozycja).ObiektDrogi.Wyjedz(this);
-
-
                         trasa.RemoveAt(0);
                         czyCzekamNaPozwolenie = true;
                     }
@@ -71,17 +64,20 @@ namespace Symulator_Ruchu_Drogowego
                 
                 if(czyCzekamNaPozwolenie && trasa.Count > 0)
                 {
-                    if(((WierzcholekDrogi)trasa[0]).ObiektDrogi.CzyMogeWejsc(this))
+                    Cel = trasa.Count >= 2 ? trasa[1] : null;
+                    if (trasa[0].CzyMogeWejsc(this))
                     {
-                        ((WierzcholekDrogi)ObecnaPozycja).ObiektDrogi.Wyjedz(this);
+                        ObecnaPozycja.Wyjdz(this);
                         czyCzekamNaPozwolenie = false;
-                        ((WierzcholekDrogi)trasa[0]).ObiektDrogi.Wjedz(this);
+                        trasa[0].Wejdz(this);
                     }
+                    else if (ObecnaPozycja.TypWierzcholka == TypWierzcholkaSamochodow.Skrzyzowanie)
+                        ((WejscieNaSkrzyzowanie)ObecnaPozycja.ObiektDrogi).ZmienPrzecinanieDrogi(this);
                 }    
             }
             else
             {
-                ((WierzcholekDrogi)ObecnaPozycja).ObiektDrogi.Wyjedz(this);
+                ObecnaPozycja.Wyjdz(this);
                 Dispose();
             }             
         }
@@ -92,12 +88,12 @@ namespace Symulator_Ruchu_Drogowego
             {
                 Height = 40,
                 Width = 40,
-                Source = new BitmapImage(new Uri($@"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/Obrazki/Samochody/samochod{KontrolerRuchu.GeneratorLosowosci.Next(1, 4)}.png", UriKind.Absolute)),
+                Source = new BitmapImage(new Uri($@"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/Obrazki/Samochody/samochod{KontrolerRuchu.GeneratorLosowosci.Next(1, 7)}.png", UriKind.Absolute)),
                 RenderTransformOrigin = new Point(0.5, 0.5)
             };
 
             Canvas.SetZIndex(obrazek, 3);
-            MainWindow.Warstwa.Children.Add(obrazek);
+            Symulacja.Warstwa.Children.Add(obrazek);
         }
 
         private void UstawPozycje(Punkt<double> punkt)
@@ -113,7 +109,7 @@ namespace Symulator_Ruchu_Drogowego
 
         public void Dispose()
         {          
-            MainWindow.Warstwa.Children.Remove(obrazek);
+            Symulacja.Warstwa.Children.Remove(obrazek);
             Samochody.Remove(this);
         }
     }

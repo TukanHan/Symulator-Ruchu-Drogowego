@@ -32,10 +32,10 @@ namespace Symulator_Ruchu_Drogowego
             RedukujPolaczenia();
             GenerujPrzejsciaPieszych();
             ZamienDrogiNaWierzcholki();
-            DodajInterfejsy();
+            UstawObiektyWejscia();
 
-            WyszukiwanieDrogi sprawdzeniePoprawnosciPolaczen = new WyszukiwanieDrogi(WierzcholkiDrog.ConvertAll(o => (WierzcholekGrafu)o));
-            if (!sprawdzeniePoprawnosciPolaczen.CzyGrafSpojny())
+            PrzeszukiwanieDFS przeszukiwanieDFS = new PrzeszukiwanieDFS(WierzcholkiDrog.ConvertAll(o => (WierzcholekGrafu)o));
+            if (!przeszukiwanieDFS.CzyGrafSpojny())
                 throw new Exception("Graf połączeń drogowych nie spójny");
         }
 
@@ -53,14 +53,16 @@ namespace Symulator_Ruchu_Drogowego
             };
             int liczbaWejscDoLosowania = liczbaWejsc;
 
+            int liczbaPowtorzen = 0;
             while (liczbaWejscDoLosowania > 0)
             {
                 int wylosowanyBok = GeneratorPoziomu.GeneratorLosowosci.Next(0, 4);
                 int rozmiarMapy = wylosowanyBok == 0 || wylosowanyBok == 2 ? rozmiarMapyX : rozmiarMapyY;
-                int wylosowanaKomorka = GeneratorPoziomu.GeneratorLosowosci.Next(0, rozmiarMapy - 4);
+                int wylosowanaKomorka = GeneratorPoziomu.GeneratorLosowosci.Next(0, rozmiarMapy - 4);      
 
                 if (tablicaOznaczenWejsc[wylosowanyBok][wylosowanaKomorka] == false)
                 {
+                    liczbaPowtorzen = 0;
                     tablicaOznaczenWejsc[wylosowanyBok][wylosowanaKomorka] = true;
                     if (wylosowanaKomorka > 0)
                         tablicaOznaczenWejsc[wylosowanyBok][wylosowanaKomorka - 1] = true;
@@ -77,6 +79,12 @@ namespace Symulator_Ruchu_Drogowego
                         WierzcholkiDrog.Add(new WierzcholekDrogi(new Punkt<double>(GRANICA_LEWA, wylosowanaKomorka + 2), TypWierzcholkaSamochodow.PunktWejscia));
 
                     liczbaWejscDoLosowania--;
+                }
+                else
+                {
+                    liczbaPowtorzen++;
+                    if (liczbaPowtorzen == 5)
+                        throw new Exception("Zbyt mała szansa na wylosowanie punktów wejścia");             
                 }
             }
         }
@@ -242,7 +250,7 @@ namespace Symulator_Ruchu_Drogowego
         /// <summary>
         /// Używa "dekoratora" do stworzenia obiektów obsługujących połączenia
         /// </summary>
-        private void DodajInterfejsy()
+        private void UstawObiektyWejscia()
         {
             foreach(WierzcholekDrogi wierzcholek in WierzcholkiDrog)
             {

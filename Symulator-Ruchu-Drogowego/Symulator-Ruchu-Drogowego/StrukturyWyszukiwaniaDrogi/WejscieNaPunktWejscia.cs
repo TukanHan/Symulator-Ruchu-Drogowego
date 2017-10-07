@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Symulator_Ruchu_Drogowego
 {
-    class ObiektDrogiPasy : IObiektDrogi
+    class WejscieNaPunktWejscia : IWejscieNaDroge
     {
         private object prawyPojazd = null;
         private object lewyPojazd = null;
         private Punkt<double> pozycja;
 
-        public ObiektDrogiPasy(Punkt<double> pozycja)
+        public WejscieNaPunktWejscia(Punkt<double> pozycja)
         {
             this.pozycja = pozycja;
         }
@@ -26,16 +26,18 @@ namespace Symulator_Ruchu_Drogowego
                 else
                     return prawyPojazd == null;
             }
-            else
+            else if (Punkt<double>.ZwrocRelacje(samochod.ObecnaPozycja.Pozycja, pozycja) == Relacja.Poziome)
             {
                 if (samochod.ObecnaPozycja.Pozycja.X > pozycja.X)
                     return prawyPojazd == null;
                 else
                     return lewyPojazd == null;
             }
+            else
+                throw new Exception("Nieprawidłowy obiekt na wejściu");
         }
 
-        public void Wjedz(Samochod samochod)
+        public void Wejdz(Samochod samochod)
         {
             if (Punkt<double>.ZwrocRelacje(samochod.ObecnaPozycja.Pozycja, pozycja) == Relacja.Pionowe)
             {
@@ -44,20 +46,22 @@ namespace Symulator_Ruchu_Drogowego
                 else
                     prawyPojazd = samochod;
             }
-            else
+            else if (Punkt<double>.ZwrocRelacje(samochod.ObecnaPozycja.Pozycja, pozycja) == Relacja.Poziome)
             {
                 if (samochod.ObecnaPozycja.Pozycja.X > pozycja.X)
                     prawyPojazd = samochod;
-                else
+                else if (samochod == prawyPojazd)
                     lewyPojazd = samochod;
             }
+            else
+                throw new Exception("Nieprawidłowy obiekt na wejściu");
         }
 
-        public void Wyjedz(Samochod samochod)
+        public void Wyjdz(Samochod samochod)
         {
             if (samochod == lewyPojazd)
                 lewyPojazd = null;
-            else if (samochod == prawyPojazd)
+            else if(samochod == prawyPojazd)
                 prawyPojazd = null;
         }
 
@@ -77,6 +81,20 @@ namespace Symulator_Ruchu_Drogowego
                 else
                     return new Punkt<double>(40, 60);
             }
+        }
+
+        public Punkt<double> PunktWejsciowy()
+        {
+            if (pozycja.X == GeneratorPolaczenSamochodow.GRANICA_LEWA)
+                return new Punkt<double>(40, 40);
+            else if (pozycja.X == GeneratorPolaczenSamochodow.GRANICA_PRAWA)
+                return new Punkt<double>(40, 0);
+            else if (pozycja.Y == GeneratorPolaczenSamochodow.GRANICA_DOLNA)
+                return new Punkt<double>(40, 60);
+            else if (pozycja.Y == GeneratorPolaczenSamochodow.GRANICA_GORNA)
+                return new Punkt<double>(0, 40);
+            else
+                throw new Exception("Nieprawidłowy obiekt na wejściu");
         }
     }
 }

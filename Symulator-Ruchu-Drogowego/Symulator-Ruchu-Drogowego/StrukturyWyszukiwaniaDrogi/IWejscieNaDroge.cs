@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace Symulator_Ruchu_Drogowego
 {
-    public interface IObiektDrogi
+    public interface IWejscieNaDroge : IWejscieNaElement<Samochod>
     {
-        bool CzyMogeWejsc(Samochod Obiekt);
-        void Wjedz(Samochod samochod);
-        void Wyjedz(Samochod samochod);
         Punkt<double> Przesuniecie(Punkt<double> punkt);
     }
 }

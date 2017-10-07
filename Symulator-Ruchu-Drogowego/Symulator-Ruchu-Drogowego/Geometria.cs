@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Symulator_Ruchu_Drogowego
 {
@@ -34,13 +30,10 @@ namespace Symulator_Ruchu_Drogowego
 
         public Punkt<double> ObliczWektorPrzesuniecia(double przesuniecie)
         {
-            if (przesuniecie == 0)
-                return new Punkt<double>(0, 0);
-
             double kawalki = ObliczOdlegloscPomiedzy() / przesuniecie;
 
             if (kawalki == 0)
-                return new Punkt<double>(0, 0);
+                return Punkt<double>.PustyPunkt;
 
             return new Punkt<double>(-(obiektB.X - obiektA.X) / kawalki, -(obiektB.Y - obiektA.Y) / kawalki);
         }

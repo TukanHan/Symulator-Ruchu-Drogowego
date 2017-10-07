@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 
 namespace Symulator_Ruchu_Drogowego
 {
-    public struct Kwadrat
+    public struct Prostokat
     {
         public Punkt<int> Pozycja { get; }
         public int Wysokosc { get; }
         public int Szerokosc { get; }
 
-        public Kwadrat(Punkt<int> pozycja, int wysokosc, int szerokosc)
+        public Prostokat(Punkt<int> pozycja, int wysokosc, int szerokosc)
         {
             Pozycja = pozycja;
             Wysokosc = wysokosc;
             Szerokosc = szerokosc;
         }
 
-        public Kwadrat(Punkt<int> punktA, Punkt<int> punktB)
+        public Prostokat(Punkt<int> punktA, Punkt<int> punktB)
         {
             Pozycja = punktA;
             Wysokosc = punktB.Y - punktA.Y + 1;
@@ -31,7 +31,7 @@ namespace Symulator_Ruchu_Drogowego
 
     public class GeneratorPrzestrzeni
     {    
-        public List<Kwadrat> Budynki { get; private set; } = new List<Kwadrat>();
+        public List<Prostokat> Budynki { get; private set; } = new List<Prostokat>();
         public List<WierzcholekChodnika> WierzcholkiChodnikow { get; private set; } = new List<WierzcholekChodnika>();
         public List<KrawedzGrafu> Chodniki { get; private set; } = new List<KrawedzGrafu>();
         public TypPrzestrzeni[,] Mapa { get; }
@@ -75,9 +75,9 @@ namespace Symulator_Ruchu_Drogowego
         /// </summary>
         private void GenerujChodniki()
         {
-            List<Kwadrat> kwadraty = ZbierzWolneKwadraty();
+            List<Prostokat> kwadraty = ZbierzWolneKwadraty();
 
-            foreach(Kwadrat kwadrat in kwadraty)
+            foreach(Prostokat kwadrat in kwadraty)
             {
                 bool czyMogePionowo = kwadrat.Szerokosc > 2 ? true : false;
                 bool czyMogePoziomo = kwadrat.Wysokosc > 2 ? true : false;
@@ -130,13 +130,13 @@ namespace Symulator_Ruchu_Drogowego
         /// </summary>
         private void GenerujBudynki()
         {      
-            List<Kwadrat> kwadraty = ZbierzWolneKwadraty();
+            List<Prostokat> kwadraty = ZbierzWolneKwadraty();
 
             while (kwadraty.Count>0)
             {
                 for(int l=kwadraty.Count-1; l>=0; --l)
                 {
-                    Kwadrat kwadrat = kwadraty[l];
+                    Prostokat kwadrat = kwadraty[l];
 
                     if(kwadrat.Wysokosc>=2 && kwadrat.Szerokosc>=2)
                     {
@@ -165,13 +165,13 @@ namespace Symulator_Ruchu_Drogowego
 
                             if(dzielePionowo)
                             {
-                                kwadraty.Add(new Kwadrat(kwadrat.Pozycja, kwadrat.Wysokosc, kwadrat.Szerokosc - (kwadrat.Szerokosc / 2)));
-                                kwadraty.Add(new Kwadrat(new Punkt<int>(kwadrat.Pozycja.X + (kwadrat.Szerokosc - (kwadrat.Szerokosc / 2)), kwadrat.Pozycja.Y), kwadrat.Wysokosc, kwadrat.Szerokosc / 2));
+                                kwadraty.Add(new Prostokat(kwadrat.Pozycja, kwadrat.Wysokosc, kwadrat.Szerokosc - (kwadrat.Szerokosc / 2)));
+                                kwadraty.Add(new Prostokat(new Punkt<int>(kwadrat.Pozycja.X + (kwadrat.Szerokosc - (kwadrat.Szerokosc / 2)), kwadrat.Pozycja.Y), kwadrat.Wysokosc, kwadrat.Szerokosc / 2));
                             }
                             else if(dzielePoziomo)
                             {
-                                kwadraty.Add(new Kwadrat(kwadrat.Pozycja, kwadrat.Wysokosc - (kwadrat.Wysokosc / 2), kwadrat.Szerokosc));
-                                kwadraty.Add(new Kwadrat(new Punkt<int>(kwadrat.Pozycja.X, kwadrat.Pozycja.Y + (kwadrat.Wysokosc - (kwadrat.Wysokosc /2))), kwadrat.Wysokosc / 2, kwadrat.Szerokosc));
+                                kwadraty.Add(new Prostokat(kwadrat.Pozycja, kwadrat.Wysokosc - (kwadrat.Wysokosc / 2), kwadrat.Szerokosc));
+                                kwadraty.Add(new Prostokat(new Punkt<int>(kwadrat.Pozycja.X, kwadrat.Pozycja.Y + (kwadrat.Wysokosc - (kwadrat.Wysokosc /2))), kwadrat.Wysokosc / 2, kwadrat.Szerokosc));
                             }
 
                             kwadraty.Remove(kwadrat);
@@ -212,12 +212,12 @@ namespace Symulator_Ruchu_Drogowego
             WierzcholkiChodnikow.Add(wierzcholekB);
             Chodniki.Add(KrawedzGrafu.StworzDroge(wierzcholekA, wierzcholekB));
 
-            ZaznaczNaMapie<TypPrzestrzeni>(Mapa, new Kwadrat((Punkt<int>)punktA, (Punkt<int>)punktB), TypPrzestrzeni.Chodnik);
+            ZaznaczNaMapie<TypPrzestrzeni>(Mapa, new Prostokat((Punkt<int>)punktA, (Punkt<int>)punktB), TypPrzestrzeni.Chodnik);
         }
 
-        private List<Kwadrat> ZbierzWolneKwadraty()
+        private List<Prostokat> ZbierzWolneKwadraty()
         {
-            List<Kwadrat> kwadraty = new List<Kwadrat>();
+            List<Prostokat> kwadraty = new List<Prostokat>();
 
             bool[,] kopiaMapy = new bool[rozmiarMapyX, rozmiarMapyY];
             for (int j = 0; j < rozmiarMapyX; ++j)
@@ -232,7 +232,7 @@ namespace Symulator_Ruchu_Drogowego
             return kwadraty;
         }
 
-        private Kwadrat ZbierzKwadrat(bool[,] kopiaMapy, Punkt<int> pozycja)
+        private Prostokat ZbierzKwadrat(bool[,] kopiaMapy, Punkt<int> pozycja)
         {
             int szerokosc = pozycja.X;
             for (; szerokosc < rozmiarMapyX; ++szerokosc)
@@ -251,13 +251,13 @@ namespace Symulator_Ruchu_Drogowego
                     }
 
 
-            Kwadrat kwadrat = new Kwadrat(pozycja, wysokosc - pozycja.Y, szerokosc - pozycja.X);
+            Prostokat kwadrat = new Prostokat(pozycja, wysokosc - pozycja.Y, szerokosc - pozycja.X);
             ZaznaczNaMapie<bool>(kopiaMapy, kwadrat,true);
 
             return kwadrat;
         }
 
-        private void ZaznaczNaMapie<T>(T[,] mapa, Kwadrat kwadrat, T wartosc)
+        private void ZaznaczNaMapie<T>(T[,] mapa, Prostokat kwadrat, T wartosc)
         {
             for (int j = kwadrat.Pozycja.Y; j < kwadrat.Pozycja.Y + kwadrat.Wysokosc && j < rozmiarMapyY; ++j)
                 for (int i = kwadrat.Pozycja.X; i < kwadrat.Pozycja.X + kwadrat.Szerokosc && i < rozmiarMapyX; ++i)

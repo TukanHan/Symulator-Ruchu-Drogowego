@@ -10,23 +10,23 @@ namespace Symulator_Ruchu_Drogowego
     public enum TypPasow {  PrzejsciePieszychPionowe, PrzejsciePieszychPoziome, LiniaPrzerywanaPionowa, LiniaPrzerywanaPozioma,
                             ZakretDolPrawo, ZakretDolLewo, ZakretGoraPrawo, ZakretGoraLewo };
 
-    public class Pasy
+    public class ZnakPoziomy
     {
         public TypPasow TypPasow { get; }
         public Punkt<double> Pozycja { get; }
 
-        public Pasy(TypPasow typPasow, Punkt<double> pozycja)
+        public ZnakPoziomy(TypPasow typPasow, Punkt<double> pozycja)
         {
             TypPasow = typPasow;
             Pozycja = pozycja;
         }
     }
 
-    public class GeneratorPasow
+    public class GeneratorZnakowPoziomych
     {
-        public List<Pasy> Pasy { get; } = new List<Pasy>();
+        public List<ZnakPoziomy> ZnakiPoziome { get; } = new List<ZnakPoziomy>();
 
-        public GeneratorPasow(GeneratorPolaczenSamochodow generatorPolaczen)
+        public GeneratorZnakowPoziomych(GeneratorPolaczenSamochodow generatorPolaczen)
         {
             GenerujPasyZWierzcholkow(generatorPolaczen);
         }
@@ -38,27 +38,27 @@ namespace Symulator_Ruchu_Drogowego
                 if (wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.Pasy)
                 {
                     if (wierzcholek.CzyJestDrogaWDol() && wierzcholek.CzyJestDrogaWGore())
-                        Pasy.Add(new Pasy(TypPasow.PrzejsciePieszychPoziome, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80)));
+                        ZnakiPoziome.Add(new ZnakPoziomy(TypPasow.PrzejsciePieszychPoziome, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80)));
                     else
-                        Pasy.Add(new Pasy(TypPasow.PrzejsciePieszychPionowe, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80)));                       
+                        ZnakiPoziome.Add(new ZnakPoziomy(TypPasow.PrzejsciePieszychPionowe, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80)));                       
                 }
                 else if(wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.Zakret)
                 {
                     if(wierzcholek.CzyJestDrogaWDol() && wierzcholek.CzyJestDrogaWPrawo())
-                        Pasy.Add(new Pasy(TypPasow.ZakretDolPrawo, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80)));
+                        ZnakiPoziome.Add(new ZnakPoziomy(TypPasow.ZakretDolPrawo, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80)));
                     else if(wierzcholek.CzyJestDrogaWDol() && wierzcholek.CzyJestDrogaWLewo())
-                        Pasy.Add(new Pasy(TypPasow.ZakretDolLewo, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80)));
+                        ZnakiPoziome.Add(new ZnakPoziomy(TypPasow.ZakretDolLewo, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80)));
                     else if (wierzcholek.CzyJestDrogaWGore() && wierzcholek.CzyJestDrogaWPrawo())
-                        Pasy.Add(new Pasy(TypPasow.ZakretGoraPrawo, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80)));
+                        ZnakiPoziome.Add(new ZnakPoziomy(TypPasow.ZakretGoraPrawo, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80)));
                     else if (wierzcholek.CzyJestDrogaWGore() && wierzcholek.CzyJestDrogaWLewo())
-                        Pasy.Add(new Pasy(TypPasow.ZakretGoraLewo, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80)));
+                        ZnakiPoziome.Add(new ZnakPoziomy(TypPasow.ZakretGoraLewo, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80)));
                 }
                 else if(wierzcholek.TypWierzcholka == TypWierzcholkaSamochodow.Droga)
                 {
                     if (wierzcholek.CzyJestDrogaWDol() && wierzcholek.CzyJestDrogaWGore())
-                        Pasy.Add(new Pasy(TypPasow.LiniaPrzerywanaPionowa, new Punkt<double>(wierzcholek.Pozycja.X * 80 + 38, wierzcholek.Pozycja.Y * 80)));
+                        ZnakiPoziome.Add(new ZnakPoziomy(TypPasow.LiniaPrzerywanaPionowa, new Punkt<double>(wierzcholek.Pozycja.X * 80 + 38, wierzcholek.Pozycja.Y * 80)));
                     else
-                        Pasy.Add(new Pasy(TypPasow.LiniaPrzerywanaPozioma, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80 + 38)));
+                        ZnakiPoziome.Add(new ZnakPoziomy(TypPasow.LiniaPrzerywanaPozioma, new Punkt<double>(wierzcholek.Pozycja.X * 80, wierzcholek.Pozycja.Y * 80 + 38)));
                 }
             }
         }

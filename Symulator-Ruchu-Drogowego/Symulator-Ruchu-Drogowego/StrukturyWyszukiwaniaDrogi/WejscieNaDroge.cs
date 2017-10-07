@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Symulator_Ruchu_Drogowego
 {
-    public class ObiektDrogiDroga : IObiektDrogi
+    public class WejscieNaDroge : IWejscieNaDroge
     {
         private object prawyPojazd = null;
         private object lewyPojazd = null;
         private Punkt<double> pozycja;
 
-        public ObiektDrogiDroga(Punkt<double> pozycja)
+        public WejscieNaDroge(Punkt<double> pozycja)
         {
             this.pozycja = pozycja;
         }
@@ -26,16 +26,18 @@ namespace Symulator_Ruchu_Drogowego
                 else
                     return prawyPojazd == null;
             }
-            else
+            else if (Punkt<double>.ZwrocRelacje(samochod.ObecnaPozycja.Pozycja, pozycja) == Relacja.Poziome)
             {
                 if (samochod.ObecnaPozycja.Pozycja.X > pozycja.X)
                     return prawyPojazd == null;
                 else
                     return lewyPojazd == null;
             }
+            else
+                throw new Exception("Nieprawidłowy obiekt na wejściu");
         }
 
-        public void Wjedz(Samochod samochod)
+        public void Wejdz(Samochod samochod)
         {
             if (Punkt<double>.ZwrocRelacje(samochod.ObecnaPozycja.Pozycja, pozycja) == Relacja.Pionowe)
             {
@@ -44,21 +46,25 @@ namespace Symulator_Ruchu_Drogowego
                 else
                     prawyPojazd = samochod;
             }
-            else
+            else if (Punkt<double>.ZwrocRelacje(samochod.ObecnaPozycja.Pozycja, pozycja) == Relacja.Poziome)
             {
                 if (samochod.ObecnaPozycja.Pozycja.X > pozycja.X)
                     prawyPojazd = samochod;
                 else
                     lewyPojazd = samochod;
             }
+            else
+                throw new Exception("Nieprawidłowy obiekt na wejściu");
         }
 
-        public void Wyjedz(Samochod samochod)
+        public void Wyjdz(Samochod samochod)
         {
             if (samochod == lewyPojazd)
                 lewyPojazd = null;
-            else if(samochod == prawyPojazd)
+            else if (samochod == prawyPojazd)
                 prawyPojazd = null;
+            else
+                throw new Exception("Nieprawidłowy obiekt na wejściu");
         }
 
         public Punkt<double> Przesuniecie(Punkt<double> punkt)
